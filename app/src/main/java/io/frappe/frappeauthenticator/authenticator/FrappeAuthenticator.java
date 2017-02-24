@@ -21,7 +21,7 @@ import static io.frappe.frappeauthenticator.authenticator.AccountGeneral.*;
  */
 public class FrappeAuthenticator extends AbstractAccountAuthenticator {
 
-    private String TAG = "FrappeAuthenticator";
+    private String TAG = "Frappe Authenticator";
     private final Context mContext;
 
     public FrappeAuthenticator(Context context) {

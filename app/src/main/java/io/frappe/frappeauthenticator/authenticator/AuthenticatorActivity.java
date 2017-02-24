@@ -136,6 +136,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                                 authMethod.put("code", authCode);
                                 authtoken = sServerAuthenticate.userSignIn(TOKEN_URL, authMethod, CLIENT_ID, REDIRECT_URI);
                                 authToken = authtoken;
+                                JSONObject bearerToken = new JSONObject(authtoken);
+                                JSONObject id_token = JWTUtils.decoded(bearerToken.get("id_token").toString());
+                                Log.i("ID_TOKEN: ", id_token.get("body").toString());
                                 data.putString(AccountManager.KEY_ACCOUNT_NAME, userName);
                                 data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
                                 data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);

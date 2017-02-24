@@ -1,15 +1,6 @@
 package io.frappe.frappeauthenticator.authenticator;
 
-import android.content.Context;
 import android.util.Log;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
@@ -28,8 +19,6 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.frappe.frappeauthenticator.R;
-
 /**
  * Handles the comminication with Parse.com
  *
@@ -39,35 +28,6 @@ import io.frappe.frappeauthenticator.R;
  */
 public class FrappeServerAuthenticate implements ServerAuthenticate{
     String authtoken;
-//    private static FrappeServerAuthenticate instance = null;
-//    //for Volley API
-//    public RequestQueue requestQueue;
-//    public FrappeServerAuthenticate()
-//    {
-//        //other stuf if you need
-//    }
-//    private FrappeServerAuthenticate(Context context)
-//    {
-//        requestQueue = Volley.newRequestQueue(context.getApplicationContext());
-//        //other stuf if you need
-//    }
-//    public static synchronized FrappeServerAuthenticate getInstance(Context context)
-//    {
-//        if (null == instance)
-//            instance = new FrappeServerAuthenticate(context);
-//        return instance;
-//    }
-//
-//    //this is so you don't need to pass context each time
-//    public static synchronized FrappeServerAuthenticate getInstance()
-//    {
-//        if (null == instance)
-//        {
-//            throw new IllegalStateException(FrappeServerAuthenticate.class.getSimpleName() +
-//                    " is not initialized, callt getInstance(...) first");
-//        }
-//        return instance;
-//    }
     @Override
     public String userSignIn(String TOKEN_URL, final JSONObject authCode, final String CLIENT_ID, final String REDIRECT_URI) throws Exception {
         Log.i("SigningIn Params", TOKEN_URL+authCode.toString()+CLIENT_ID+REDIRECT_URI);
