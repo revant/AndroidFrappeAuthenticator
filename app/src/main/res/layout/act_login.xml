@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent">
+    <WebView
+        android:id="@+id/webv"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="gone"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/accountName"
+        android:hint="Email Address"
+        android:inputType="textEmailAddress"
+        android:text="revant@mntechnique.com" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:id="@+id/accountPassword"
+        android:hint="Password" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/accountFrappeServer"
+        android:hint="Frappe Server"
+        android:inputType="textUri"
+        android:text="https://mntechnique.com" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:id="@+id/accountClientId"
+        android:hint="ClientId"
+        android:text="6cb0f605c5" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:id="@+id/accountScope"
+        android:hint="Scope"
+        android:text="all openid"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:id="@+id/accountRedirectUri"
+        android:hint="Redirect URI"
+        android:text="http://localhost" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:id="@+id/accountClientSecret"
+        android:hint="ClientSecret" />
+
+    <Button android:id="@+id/submit"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="10dp"
+              android:text="Sign in"
+              android:padding="10dp"/>
+
+    <TextView
+        android:text="Awaiting Response"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textResponse" />
+
+</LinearLayout>
+

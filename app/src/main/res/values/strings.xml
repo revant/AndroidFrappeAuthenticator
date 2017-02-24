@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Frappe Authenticator</string>
+    <string name="label">Frappe</string>
+    <string name="login_label">Log in</string>
+</resources>
