@@ -15,16 +15,14 @@
         android:layout_height="wrap_content"
         android:id="@+id/accountFrappeServer"
         android:hint="Frappe Server"
-        android:inputType="textUri"
-        android:text="https://mntechnique.com" />
+        android:inputType="textUri" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
         android:id="@+id/accountClientId"
-        android:hint="ClientId"
-        android:text="6cb0f605c5" />
+        android:hint="ClientId" />
 
     <EditText
         android:layout_width="match_parent"
