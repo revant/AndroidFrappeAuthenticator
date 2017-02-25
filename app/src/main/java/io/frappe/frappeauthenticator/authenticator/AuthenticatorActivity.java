@@ -22,6 +22,7 @@ import io.frappe.frappeauthenticator.R;
 import static io.frappe.frappeauthenticator.authenticator.AccountGeneral.sServerAuthenticate;
 import static io.frappe.frappeauthenticator.authenticator.AccountGeneral.AUTH_ENDPOINT;
 import static io.frappe.frappeauthenticator.authenticator.AccountGeneral.TOKEN_ENDPOINT;
+import static io.frappe.frappeauthenticator.authenticator.AccountGeneral.OPENID_PROFILE_ENDPOINT;
 
 
 /**
@@ -49,7 +50,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private final String TAG = this.getClass().getSimpleName();
 
     private AccountManager mAccountManager;
-    private String mAuthTokenType, REDIRECT_URI, userFrappeServer, CLIENT_ID, authToken;
+    private String mAuthTokenType, REDIRECT_URI, userFrappeServer, CLIENT_ID, authToken, OPENID_PROFILE_URL;
 
     /**
      * Called when the activity is first created.
@@ -65,9 +66,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         if (mAuthTokenType == null)
             mAuthTokenType = AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS;
 
-        if (accountName != null) {
-            ((TextView)findViewById(R.id.accountName)).setText(accountName);
-        }
+//        if (accountName != null) {
+//            ((TextView)findViewById(R.id.accountName)).setText(accountName);
+//        }
 
         findViewById(R.id.submit).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,13 +90,13 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     public void submit() {
 
-        final String userName = ((TextView) findViewById(R.id.accountName)).getText().toString();
-        final String userPass = ((TextView) findViewById(R.id.accountPassword)).getText().toString();
+        final String clientSecret = ((TextView) findViewById(R.id.accountClientSecret)).getText().toString();
         userFrappeServer = ((TextView) findViewById(R.id.accountFrappeServer)).getText().toString();
         final String AUTH_URL = userFrappeServer + AUTH_ENDPOINT;
         final String TOKEN_URL = userFrappeServer + TOKEN_ENDPOINT;
         CLIENT_ID = ((TextView) findViewById(R.id.accountClientId)).getText().toString();
         REDIRECT_URI = ((TextView) findViewById(R.id.accountRedirectUri)).getText().toString();
+        OPENID_PROFILE_URL = userFrappeServer + OPENID_PROFILE_ENDPOINT;
         final String OAUTH_SCOPE = ((TextView) findViewById(R.id.accountScope)).getText().toString();
 
         final String accountType = getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
@@ -137,12 +138,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                                 authtoken = sServerAuthenticate.userSignIn(TOKEN_URL, authMethod, CLIENT_ID, REDIRECT_URI);
                                 authToken = authtoken;
                                 JSONObject bearerToken = new JSONObject(authtoken);
-                                JSONObject id_token = JWTUtils.decoded(bearerToken.get("id_token").toString());
-                                Log.i("ID_TOKEN: ", id_token.get("body").toString());
-                                data.putString(AccountManager.KEY_ACCOUNT_NAME, userName);
+                                JSONObject openIDProfile = sServerAuthenticate.getOpenIDProfile(bearerToken.get("access_token").toString(),OPENID_PROFILE_URL);
+                                //JSONObject id_token = JWTUtils.decoded(bearerToken.get("id_token").toString());
+                                data.putString(AccountManager.KEY_ACCOUNT_NAME, openIDProfile.get("email").toString());
                                 data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
                                 data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
-                                data.putString(PARAM_USER_PASS, userPass);
+                                data.putString(PARAM_USER_PASS, clientSecret);
 
                             } catch (Exception e) {
                                 data.putString(KEY_ERROR_MESSAGE, e.getMessage());
@@ -163,8 +164,6 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                         }
                     }.execute();
                     webView.setVisibility(View.GONE);
-                    TextView mTxtResponse = (TextView) findViewById(R.id.textResponse);
-                    mTxtResponse.setText(authCode + authToken);
                 }else if(url.contains("redirect_uri=http%3A%2F%2Flocalhost") && authComplete != true) {
                     Toast.makeText(getBaseContext(), "Allow or Deny Access to Resources", Toast.LENGTH_LONG).show();
                 }else if(url.contains("error=access_denied")){

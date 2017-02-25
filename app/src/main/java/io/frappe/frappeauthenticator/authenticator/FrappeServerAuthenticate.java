@@ -79,6 +79,33 @@ public class FrappeServerAuthenticate implements ServerAuthenticate{
         }
         return authtoken;
     }
+
+    @Override
+    public JSONObject getOpenIDProfile(String accessToken, String OPENID_PROFILE_URL){
+        JSONObject openIDProfile = new JSONObject();
+        HashMap<String,String> params=new HashMap<>();
+        try{
+            URL url=new URL(OPENID_PROFILE_URL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+
+            InputStream inputStream = conn.getInputStream();
+            StringWriter stringWriter = new StringWriter();
+            IOUtils.copy(inputStream, stringWriter, "UTF-8");
+            String is = stringWriter.toString();
+            int responseCode=conn.getResponseCode();
+            conn.disconnect();
+            if (responseCode == HttpURLConnection.HTTP_OK)
+                openIDProfile = new JSONObject(is);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return openIDProfile;
+    }
     private class ParseComError implements Serializable {
         int code;
         String error;

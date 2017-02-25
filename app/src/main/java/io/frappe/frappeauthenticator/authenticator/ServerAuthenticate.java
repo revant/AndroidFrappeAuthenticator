@@ -10,4 +10,5 @@ import org.json.JSONObject;
 public interface ServerAuthenticate {
     //public String userSignUp(final String name, final String email, final String pass, String authType) throws Exception;
     public String userSignIn(String TOKEN_URL, JSONObject authMethod, String CLIENT_ID, String REDIRECT_URI) throws Exception;
+    public JSONObject getOpenIDProfile(String accessToken, String OPENID_PROFILE_URL);
 }

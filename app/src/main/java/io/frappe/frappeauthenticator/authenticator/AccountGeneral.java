@@ -22,6 +22,6 @@ public class AccountGeneral {
     public static final String AUTHTOKEN_TYPE_FULL_ACCESS_LABEL = "Full access to an Frappe account";
     public static final String AUTH_ENDPOINT = "/api/method/frappe.integration_broker.oauth2.authorize";
     public static final String TOKEN_ENDPOINT = "/api/method/frappe.integration_broker.oauth2.get_token";
-
+    public static final String OPENID_PROFILE_ENDPOINT = "/api/method/frappe.integration_broker.oauth2.openid_profile";
     public static final ServerAuthenticate sServerAuthenticate = new FrappeServerAuthenticate();
 }
