@@ -10,6 +10,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
@@ -105,6 +107,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setVisibility(View.VISIBLE);
         webView.clearCache(true);
+        CookieManager.getInstance().removeAllCookie();
+        CookieSyncManager.getInstance().sync();
         webView.loadUrl(AUTH_URL+"?redirect_uri="+REDIRECT_URI+"&response_type=code&client_id="+CLIENT_ID+"&scope="+OAUTH_SCOPE);
         webView.setWebViewClient(new WebViewClient() {
 
@@ -163,6 +167,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                             }
                         }
                     }.execute();
+
                     webView.setVisibility(View.GONE);
                 }else if(url.contains("redirect_uri=http%3A%2F%2Flocalhost") && authComplete != true) {
                     Toast.makeText(getBaseContext(), "Allow or Deny Access to Resources", Toast.LENGTH_LONG).show();

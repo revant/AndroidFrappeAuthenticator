@@ -3,5 +3,4 @@
                        android:accountType="io.frappe.frappeauthenticator"
                        android:icon="@drawable/frappe"
                        android:smallIcon="@drawable/frappe"
-                       android:label="@string/label"
-                       android:accountPreferences="@xml/prefs"/>
+                       android:label="@string/label" />
