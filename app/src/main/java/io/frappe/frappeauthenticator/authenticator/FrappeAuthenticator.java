@@ -76,7 +76,7 @@ public class FrappeAuthenticator extends AbstractAccountAuthenticator {
             final String password = am.getPassword(account);
             if (password != null) {
                 try {
-                    Log.d("frappe", TAG + "> re-authenticating with the existing password");
+                    Log.d("frappe", TAG + "> re-authenticating with the refresh token");
                     String TOKEN_URL = frappeServer + TOKEN_ENDPOINT;
                     JSONObject authMethod = new JSONObject();
                     authMethod.put("type", "refresh");

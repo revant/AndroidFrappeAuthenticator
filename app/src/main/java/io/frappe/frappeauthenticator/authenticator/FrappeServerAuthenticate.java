@@ -58,7 +58,7 @@ public class FrappeServerAuthenticate implements ServerAuthenticate{
             OutputStream os = conn.getOutputStream();
             BufferedWriter writer = new BufferedWriter(
                     new OutputStreamWriter(os, "UTF-8"));
-            writer.write(postDataStr(params));
+            writer.write(FrappeUtils.postDataStr(params));
 
             writer.flush();
             writer.close();
@@ -109,22 +109,6 @@ public class FrappeServerAuthenticate implements ServerAuthenticate{
     private class ParseComError implements Serializable {
         int code;
         String error;
-    }
-    private String postDataStr(HashMap<String, String> params) throws UnsupportedEncodingException {
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
-        for(Map.Entry<String, String> entry : params.entrySet()){
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-        }
-
-        return result.toString();
     }
     private class User implements Serializable {
         private String firstName;
