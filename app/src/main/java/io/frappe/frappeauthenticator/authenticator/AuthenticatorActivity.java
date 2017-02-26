@@ -14,6 +14,7 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,7 +92,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     }
 
     public void submit() {
-
+        final Button signInButton = ((Button) findViewById(R.id.submit));
         final String clientSecret = ((TextView) findViewById(R.id.accountClientSecret)).getText().toString();
         userFrappeServer = ((TextView) findViewById(R.id.accountFrappeServer)).getText().toString();
         final String AUTH_URL = userFrappeServer + AUTH_ENDPOINT;
@@ -167,8 +168,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                             }
                         }
                     }.execute();
-
                     webView.setVisibility(View.GONE);
+                    signInButton.setEnabled(false);
                 }else if(url.contains("redirect_uri=http%3A%2F%2Flocalhost") && authComplete != true) {
                     Toast.makeText(getBaseContext(), "Allow or Deny Access to Resources", Toast.LENGTH_LONG).show();
                 }else if(url.contains("error=access_denied")){
