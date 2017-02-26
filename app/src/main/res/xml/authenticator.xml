@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
-                       android:accountType="io.frappe.frappeauthenticator"
-                       android:icon="@drawable/frappe"
-                       android:smallIcon="@drawable/frappe"
-                       android:label="@string/label" />
+    android:accountType="io.frappe.frappeauthenticator"
+    android:icon="@drawable/frappe"
+    android:smallIcon="@drawable/frappe"
+    android:label="@string/label" />
