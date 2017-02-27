@@ -5,12 +5,14 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 
@@ -112,37 +114,21 @@ public class MainActivity extends Activity {
             public void run(AccountManagerFuture<Bundle> future) {
                 try {
                     Bundle bundle = future.getResult();
-                    if (future.isDone() && !future.isCancelled()) {
-                        if (bundle.containsKey(AccountManager.KEY_INTENT)) {
-                            Intent intent = bundle.getParcelable(AccountManager.KEY_INTENT);
-                            try {
-                                throw new AuthFailureError(intent);
-                            } catch (AuthFailureError authFailureError) {
-                                authFailureError.printStackTrace();
-                            }
-                        }
-                        String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-                        Log.i("access_token", authToken);
+                    for (String key : bundle.keySet()) {
+                        Object value = bundle.get(key);
+                        Log.d("callback", String.format("%s %s", key, value.toString()));
                     }
-//                    for (String key : bundle.keySet()) {
-//                        Object value = bundle.get(key);
-//                        Log.d("callback", String.format("%s %s", key, value.toString()));
-//                    }
-//                    String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+                    String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+                    Log.d("access_token", authToken);
 
-                    //notify(String.format("token: %s", authToken));
-                    //mAccountManager.invalidateAuth/Token(account.type, authToken);
+                    mAccountManager.invalidateAuthToken(account.type, authToken);
                 } catch (Exception e) {
                     Log.d("error", e.getMessage());
-                    notify(String.format("error: %s", e.getMessage()));
+
                 }
             }
 
-            private void notify(String message) {
-                final RelativeLayout layout = (RelativeLayout) findViewById(R.id.root_layout);
-            }
-        }, null);
-    }
+        }, null);    }
 
     private void rememberIdpSettings(String accountType, String authTokenType) {
         if (idpSettings == null) {

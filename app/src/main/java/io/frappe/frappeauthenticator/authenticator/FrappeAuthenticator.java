@@ -71,9 +71,13 @@ public class FrappeAuthenticator extends AbstractAccountAuthenticator {
         String REDIRECT_URI = am.getUserData(account, "redirectURI");
         JSONObject openIDProfile = sServerAuthenticate.getOpenIDProfile(accessToken,frappeServer+AccountGeneral.OPENID_PROFILE_ENDPOINT);
 
-        Log.d("frappe", TAG + "> peekAuthToken returned - " + authToken);
-        Log.d("frappe", TAG + "> openidp - " + openIDProfile.has("email"));
-        Log.d("frappe", TAG + "> openidp - " + TextUtils.isEmpty(accessToken));
+        Log.d("frappe", TAG + "> authToken returned - " + authToken);
+        try {
+            Log.d("frappe", TAG + "> openidp response is_null - " + openIDProfile.getString("email") + " " + openIDProfile.isNull("email"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("frappe", TAG + "> accesstoken is_empty- " + accessToken + " " + TextUtils.isEmpty(accessToken));
 
         // Lets give another try to authenticate the user
         if (TextUtils.isEmpty(accessToken) || openIDProfile.isNull("email")) {
