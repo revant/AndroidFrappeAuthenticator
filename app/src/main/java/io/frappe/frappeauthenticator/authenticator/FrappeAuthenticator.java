@@ -68,23 +68,28 @@ public class FrappeAuthenticator extends AbstractAccountAuthenticator {
         String frappeServer = am.getUserData(account, "frappeServer");
         String CLIENT_ID = am.getUserData(account, "clientId");
         String REDIRECT_URI = am.getUserData(account, "redirectURI");
+        JSONObject bearerToken;
+        JSONObject openIDProfile = new JSONObject();
+        try {
+            bearerToken = new JSONObject(authToken);
+            openIDProfile = sServerAuthenticate.getOpenIDProfile(bearerToken.getString("access_token"),frappeServer+AccountGeneral.OPENID_PROFILE_ENDPOINT);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         Log.d("frappe", TAG + "> peekAuthToken returned - " + authToken);
 
         // Lets give another try to authenticate the user
-        if (TextUtils.isEmpty(authToken)) {
-            final String password = am.getPassword(account);
-            if (password != null) {
-                try {
-                    Log.d("frappe", TAG + "> re-authenticating with the refresh token");
-                    String TOKEN_URL = frappeServer + TOKEN_ENDPOINT;
-                    JSONObject authMethod = new JSONObject();
-                    authMethod.put("type", "refresh");
-                    authMethod.put("refresh_token", refreshToken);
-                    authToken = sServerAuthenticate.userSignIn(TOKEN_URL,authMethod,CLIENT_ID,REDIRECT_URI);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        if (TextUtils.isEmpty(authToken) || !openIDProfile.has("email")) {
+            try {
+                Log.d("frappe", TAG + "> re-authenticating with the refresh token");
+                String TOKEN_URL = frappeServer + TOKEN_ENDPOINT;
+                JSONObject authMethod = new JSONObject();
+                authMethod.put("type", "refresh");
+                authMethod.put("refresh_token", refreshToken);
+                authToken = sServerAuthenticate.userSignIn(TOKEN_URL,authMethod,CLIENT_ID,REDIRECT_URI);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
