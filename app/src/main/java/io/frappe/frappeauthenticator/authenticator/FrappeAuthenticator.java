@@ -72,6 +72,7 @@ public class FrappeAuthenticator extends AbstractAccountAuthenticator {
         JSONObject openIDProfile = sServerAuthenticate.getOpenIDProfile(accessToken,frappeServer+AccountGeneral.OPENID_PROFILE_ENDPOINT);
 
         Log.d("frappe", TAG + "> authToken returned - " + authToken);
+        Log.d("frappe", TAG + "> openid isnull - " + openIDProfile.isNull("email"));
 
         // Lets give another try to authenticate the user
         if (TextUtils.isEmpty(authToken) || openIDProfile.isNull("email")) {

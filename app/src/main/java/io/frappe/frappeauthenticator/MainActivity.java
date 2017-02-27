@@ -120,15 +120,14 @@ public class MainActivity extends Activity {
                     }
                     String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
                     Log.d("access_token", authToken);
-
+                    //notify(String.format("token: %s", authToken),context);
                     mAccountManager.invalidateAuthToken(account.type, authToken);
                 } catch (Exception e) {
                     Log.d("error", e.getMessage());
-
                 }
             }
-
-        }, null);    }
+        },null);
+    }
 
     private void rememberIdpSettings(String accountType, String authTokenType) {
         if (idpSettings == null) {
