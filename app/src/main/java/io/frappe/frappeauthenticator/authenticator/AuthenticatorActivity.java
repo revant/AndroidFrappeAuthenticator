@@ -197,6 +197,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             // (Not setting the auth token will cause another call to the server to authenticate the user)
             mAccountManager.addAccountExplicitly(account, accountPassword, null);
             mAccountManager.setAuthToken(account, authtokenType, authtoken);
+            mAccountManager.setUserData(account, "authtoken", authtoken);
             setAccountAuthenticatorResult(getIntent().getExtras());
             setResult(RESULT_OK,getIntent());
 

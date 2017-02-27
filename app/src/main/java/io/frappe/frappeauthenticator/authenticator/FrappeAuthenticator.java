@@ -63,7 +63,7 @@ public class FrappeAuthenticator extends AbstractAccountAuthenticator {
         // the server for an appropriate AuthToken.
         final AccountManager am = AccountManager.get(mContext);
 
-        String authToken = am.peekAuthToken(account, authTokenType);
+        String authToken = am.getUserData(account, "authtoken");
         String accessToken = am.getUserData(account, "accessToken");
         String refreshToken = am.getUserData(account, "refreshToken");
         String frappeServer = am.getUserData(account, "frappeServer");
@@ -72,15 +72,9 @@ public class FrappeAuthenticator extends AbstractAccountAuthenticator {
         JSONObject openIDProfile = sServerAuthenticate.getOpenIDProfile(accessToken,frappeServer+AccountGeneral.OPENID_PROFILE_ENDPOINT);
 
         Log.d("frappe", TAG + "> authToken returned - " + authToken);
-        try {
-            Log.d("frappe", TAG + "> openidp response is_null - " + openIDProfile.getString("email") + " " + openIDProfile.isNull("email"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Log.d("frappe", TAG + "> accesstoken is_empty- " + accessToken + " " + TextUtils.isEmpty(accessToken));
 
         // Lets give another try to authenticate the user
-        if (TextUtils.isEmpty(accessToken) || openIDProfile.isNull("email")) {
+        if (TextUtils.isEmpty(authToken) || openIDProfile.isNull("email")) {
             try {
                 Log.d("frappe", TAG + "> re-authenticating with the refresh token");
                 String TOKEN_URL = frappeServer + TOKEN_ENDPOINT;
