@@ -197,10 +197,14 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             // (Not setting the auth token will cause another call to the server to authenticate the user)
             mAccountManager.addAccountExplicitly(account, accountPassword, null);
             mAccountManager.setAuthToken(account, authtokenType, authtoken);
+            setAccountAuthenticatorResult(getIntent().getExtras());
+            setResult(RESULT_OK,getIntent());
+
             JSONObject bearerToken;
             try {
                 bearerToken = new JSONObject(authtoken);
-                mAccountManager.setUserData(account, "refreshToken", bearerToken.get("refresh_token").toString());
+                mAccountManager.setUserData(account, "refreshToken", bearerToken.getString("refresh_token"));
+                mAccountManager.setUserData(account, "accessToken", bearerToken.getString("access_token"));
                 mAccountManager.setUserData(account, "redirectURI", REDIRECT_URI);
                 mAccountManager.setUserData(account, "frappeServer", userFrappeServer);
                 mAccountManager.setUserData(account, "clientId", CLIENT_ID);

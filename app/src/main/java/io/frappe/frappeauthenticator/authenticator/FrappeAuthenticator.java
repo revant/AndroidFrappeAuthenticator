@@ -64,23 +64,19 @@ public class FrappeAuthenticator extends AbstractAccountAuthenticator {
         final AccountManager am = AccountManager.get(mContext);
 
         String authToken = am.peekAuthToken(account, authTokenType);
+        String accessToken = am.getUserData(account, "accessToken");
         String refreshToken = am.getUserData(account, "refreshToken");
         String frappeServer = am.getUserData(account, "frappeServer");
         String CLIENT_ID = am.getUserData(account, "clientId");
         String REDIRECT_URI = am.getUserData(account, "redirectURI");
-        JSONObject bearerToken;
-        JSONObject openIDProfile = new JSONObject();
-        try {
-            bearerToken = new JSONObject(authToken);
-            openIDProfile = sServerAuthenticate.getOpenIDProfile(bearerToken.getString("access_token"),frappeServer+AccountGeneral.OPENID_PROFILE_ENDPOINT);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        JSONObject openIDProfile = sServerAuthenticate.getOpenIDProfile(accessToken,frappeServer+AccountGeneral.OPENID_PROFILE_ENDPOINT);
 
         Log.d("frappe", TAG + "> peekAuthToken returned - " + authToken);
+        Log.d("frappe", TAG + "> openidp - " + openIDProfile.has("email"));
+        Log.d("frappe", TAG + "> openidp - " + TextUtils.isEmpty(accessToken));
 
         // Lets give another try to authenticate the user
-        if (TextUtils.isEmpty(authToken) || !openIDProfile.has("email")) {
+        if (TextUtils.isEmpty(accessToken) || openIDProfile.isNull("email")) {
             try {
                 Log.d("frappe", TAG + "> re-authenticating with the refresh token");
                 String TOKEN_URL = frappeServer + TOKEN_ENDPOINT;
