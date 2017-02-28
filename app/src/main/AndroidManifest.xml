@@ -18,7 +18,8 @@
 
     <application
         android:icon="@drawable/frappe"
-        android:label="@string/app_name">
+        android:label="@string/app_name"
+        android:name=".ApplicationController">
 
         <!-- *** Not really needed here, but convenient for copying to other apps that will use this module *** -->
         <activity android:name=".authenticator.AuthenticatorActivity" />
@@ -55,5 +56,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

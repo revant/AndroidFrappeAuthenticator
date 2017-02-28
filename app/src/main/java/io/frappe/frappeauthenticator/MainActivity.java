@@ -12,8 +12,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import io.frappe.frappeauthenticator.sync.ERPNextContactProvider;
 
 public class MainActivity extends Activity {
 
@@ -57,7 +62,14 @@ public class MainActivity extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getAuthToken("io.frappe.frappeauthenticator", "Read only");
+                ERPNextContactProvider server = new ERPNextContactProvider();
+                JSONArray contactList = server.getContacts("https://mntechnique.com","y4D9Pbwo9URDpGbbHoznjDSnyIV434",new FrappeServerCallback() {
+                    @Override
+                    public void onSuccessJSONObject(JSONObject response) {
+                        tokenResult.setText(response.toString());
+                    }
+                });
+                //getAuthToken("io.frappe.frappeauthenticator", "Read only");
             }
         });
     }

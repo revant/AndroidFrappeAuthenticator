@@ -99,7 +99,7 @@ public class ContactsSyncAdapterService extends Service {
         ERPNextContactProvider server = new ERPNextContactProvider();
         try {
             bearerToken = new JSONObject(authToken);
-            contactsList = server.getContacts(frappeServer, bearerToken.getString("access_token"));
+            //contactsList = server.getContacts(frappeServer, bearerToken.getString("access_token"));
         }
         catch (Exception e) {
             e.printStackTrace();

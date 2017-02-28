@@ -25,4 +25,12 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="33dp"
         android:id="@+id/tokenResult" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tokenResult"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/listView"
+        android:layout_marginTop="97dp" />
 </RelativeLayout>
