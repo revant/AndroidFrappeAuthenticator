@@ -1,7 +1,5 @@
 package io.frappe.frappeauthenticator.authenticator;
 
-import android.util.Log;
-
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,17 +10,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Handles the comminication with Parse.com
  *
- * User: Frappe
+ * User: revant
  * Date: 3/27/13
  * Time: 3:30 AM
  */
@@ -30,7 +25,6 @@ public class FrappeServerAuthenticate implements ServerAuthenticate{
     String authtoken;
     @Override
     public String userSignIn(String TOKEN_URL, final JSONObject authCode, final String CLIENT_ID, final String REDIRECT_URI) throws Exception {
-        Log.i("SigningIn Params", TOKEN_URL+authCode.toString()+CLIENT_ID+REDIRECT_URI);
         HashMap<String,String> params=new HashMap<>();
         params.put("client_id", CLIENT_ID);
         params.put("redirect_uri", REDIRECT_URI);

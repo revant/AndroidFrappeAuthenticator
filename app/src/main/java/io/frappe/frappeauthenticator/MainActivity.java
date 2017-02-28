@@ -5,22 +5,20 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
-
-import com.android.volley.AuthFailureError;
+import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends Activity {
 
+    public TextView tokenResult;
+    public String authToken;
     AccountManager mAccountManager;
     Map<String, String> idpSettings;
 
@@ -28,6 +26,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        tokenResult = (TextView) findViewById(R.id.tokenResult);
         mAccountManager = AccountManager.get(this);
         loadButtons();
     }
@@ -50,9 +49,6 @@ public class MainActivity extends Activity {
     }
 
     private void loadButtons() {
-        loadButtonFb();
-        loadButtonGoogle();
-        loadButtonNov();
         loadButtonFrappe();
     }
 
@@ -62,36 +58,6 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 getAuthToken("io.frappe.frappeauthenticator", "Read only");
-            }
-        });
-    }
-
-    private void loadButtonFb() {
-        Button button = (Button) findViewById(R.id.button_fb);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getAuthToken("com.facebook.auth.login", "email");
-            }
-        });
-    }
-
-    private void loadButtonGoogle() {
-        Button button = (Button) findViewById(R.id.button_google);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getAuthToken("com.google", "oauth2:openid profile email");
-            }
-        });
-    }
-
-    private void loadButtonNov() {
-        Button button = (Button) findViewById(R.id.button_nov);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getAuthToken("jp.yauth.account_manager.server", "openid profile email");
             }
         });
     }
@@ -118,7 +84,8 @@ public class MainActivity extends Activity {
                         Object value = bundle.get(key);
                         Log.d("callback", String.format("%s %s", key, value.toString()));
                     }
-                    String authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+                    authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+                    tokenResult.setText("Token Result : "+authToken);
                     Log.d("access_token", authToken);
                     //notify(String.format("token: %s", authToken),context);
                     mAccountManager.invalidateAuthToken(account.type, authToken);

@@ -11,37 +11,18 @@
     android:id="@+id/root_layout">
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Google"
-        android:id="@+id/button_google"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Facebook"
-        android:id="@+id/button_fb"
-        android:layout_marginBottom="30dp"
-        android:layout_above="@+id/button_google"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="nov"
-        android:id="@+id/button_nov"
-        android:layout_marginTop="30dp"
-        android:layout_below="@+id/button_google"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Frappe"
+        android:text="Get Token"
         android:id="@+id/button_frappe"
-        android:layout_above="@+id/button_fb"
-        android:layout_alignStart="@+id/button_google"
         android:layout_marginBottom="28dp" />
+
+    <TextView
+        android:text="Token Result : - "
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_frappe"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="33dp"
+        android:id="@+id/tokenResult" />
 </RelativeLayout>
