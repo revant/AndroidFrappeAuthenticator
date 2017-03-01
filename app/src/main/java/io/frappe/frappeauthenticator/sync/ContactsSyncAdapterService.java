@@ -118,7 +118,7 @@ public class ContactsSyncAdapterService extends Service {
                                     try {
                                         object = contactsList.getJSONObject(i);
                                         if (!localContacts.containsKey(object.getString("name"))) {
-                                            addContact(account, object, operationList);
+                                            addContact(account, object);
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -151,14 +151,32 @@ public class ContactsSyncAdapterService extends Service {
         }
     }
 
-    private static void addContact(Account account, JSONObject contactInfo, ArrayList<ContentProviderOperation> operationList) {
-        String customerName = null;
+    private static void addContact(Account account, JSONObject contactInfo) {
+
+        String contactName = null;
         String supplierName = null;
+        String customerName = null;
         String salePartnerName = null;
+        String lastName = null;
+        String emailID = null;
+        String mobileNo = null;
+        String firstName = null;
+        String department = null;
+        String designation = null;
+        String phone = null;
+
         try {
-            customerName = contactInfo.get("customer_name").toString();
-            supplierName = contactInfo.get("supplier_name").toString();
-            salePartnerName = contactInfo.get("sales_partner").toString();
+            contactName = contactInfo.getString("name");
+            customerName = contactInfo.getString("customer_name");
+            supplierName = contactInfo.getString("supplier_name");
+            salePartnerName = contactInfo.getString("sales_partner");
+            lastName = contactInfo.getString("last_name");
+            emailID = contactInfo.getString("email_id");
+            mobileNo = contactInfo.getString("mobile_no");
+            firstName = contactInfo.getString("first_name");
+            department = contactInfo.getString("department");
+            designation = contactInfo.getString("designation");
+            phone = contactInfo.getString("phone");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -168,51 +186,100 @@ public class ContactsSyncAdapterService extends Service {
         op_list.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
-                //.withValue(RawContacts.AGGREGATION_MODE, RawContacts.AGGREGATION_MODE_DEFAULT)
+                //.withValue(ContactsContract.RawContacts.Data.IS_READ_ONLY,"1")
+                .withValue(ContactsContract.RawContacts.SYNC1,contactName)
+                //.withValue(ContactsContract.RawContacts.AGGREGATION_MODE, ContactsContract.RawContacts.AGGREGATION_MODE_DEFAULT)
                 .build());
 
         // first and last names
-        try {
+        if (firstName!=null){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, 0)
+                    .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, contactInfo.getString("first_name"))
-                    .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, contactInfo.getString("last_name"))
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, firstName)
                     .build());
-        } catch (JSONException e) {
-            e.printStackTrace();
+        }
+        if (lastName!=null){
+            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, lastName)
+                    .build());
         }
 
-        try {
+        // add phone number
+        if (phone!=null) {
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, 0)
+                    .withValueBackReference(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, contactInfo.getString("phone"))
+                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
                     .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
                     .build());
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-        try {
+
+        //add mobile number
+        if (mobileNo!=null) {
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, 0)
+                    .withValueBackReference(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, contactInfo.getString("mobile_no"))
+                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, mobileNo)
                     .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
                     .build());
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-        try {
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
 
+        //add email
+        if (emailID!=null) {
+            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.CommonDataKinds.Email.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Email.DATA, contactInfo.getString("email_id"))
+                    .withValue(ContactsContract.CommonDataKinds.Email.DATA, emailID)
                     .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
                     .build());
-        } catch (JSONException e) {
-            e.printStackTrace();
+        }
+
+        //add Customer
+        if(customerName!=null){
+            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, customerName)
+                    .build());
+        }
+
+        //add Supplier
+        if(supplierName!=null){
+            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, supplierName)
+                    .build());
+        }
+
+        //add Sales Partner
+        if(salePartnerName!=null){
+            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, salePartnerName)
+                    .build());
+        }
+
+        //add Department
+        if(department!=null){
+            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Organization.DEPARTMENT, department)
+                    .build());
+        }
+
+        //add Designation
+        if(designation!=null){
+            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Organization.TITLE, designation)
+                    .build());
         }
 
         try{
