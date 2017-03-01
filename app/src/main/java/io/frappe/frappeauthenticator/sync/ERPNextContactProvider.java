@@ -1,35 +1,16 @@
 package io.frappe.frappeauthenticator.sync;
 
-import android.util.Log;
-
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedWriter;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import io.frappe.frappeauthenticator.ApplicationController;
-import io.frappe.frappeauthenticator.FrappeServerCallback;
-import io.frappe.frappeauthenticator.authenticator.FrappeUtils;
 
 /**
  * Created by revant on 26/2/17.
