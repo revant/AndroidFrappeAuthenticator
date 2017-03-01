@@ -22,7 +22,9 @@
         android:name=".sync.ApplicationController">
 
         <!-- *** Not really needed here, but convenient for copying to other apps that will use this module *** -->
-        <activity android:name=".authenticator.AuthenticatorActivity" />
+        <activity
+            android:name=".authenticator.AuthenticatorActivity"
+            android:exported="true"/>
 
         <service android:name=".authenticator.FrappeAuthenticatorService">
             <intent-filter>
