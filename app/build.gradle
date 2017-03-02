@@ -31,4 +31,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.+'
     // https://mvnrepository.com/artifact/commons-io/commons-io
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
+    compile group: 'org.aksw.gson', name: 'gson-utils-core', version: '1.0.0'
 }

@@ -15,6 +15,8 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.READ_USER_DICTIONARY" />
+    <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY" />
 
     <application
         android:icon="@drawable/frappe"
@@ -22,6 +24,13 @@
         android:name=".sync.ApplicationController">
 
         <!-- *** Not really needed here, but convenient for copying to other apps that will use this module *** -->
+        <provider
+            android:authorities="io.frappe.frappeauthenticator"
+            android:name="io.frappe.frappeauthenticator.sync.ContactProvider"
+            android:exported="true"
+            android:syncable="true"
+            android:supportsUploading="false"/>
+
         <activity
             android:name=".authenticator.AuthenticatorActivity"
             android:exported="true"/>
@@ -46,8 +55,9 @@
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_contacts" />
-            <!-- <meta-data android:name="android.provider.CONTACTS_STRUCTURE" -->
-            <!-- android:resource="@xml/contacts" /> -->
+             <meta-data
+                 android:name="android.provider.CONTACTS_STRUCTURE"
+                 android:resource="@xml/contacts" />
         </service>
     </application>
 </manifest>

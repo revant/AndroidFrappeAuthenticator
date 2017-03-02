@@ -72,6 +72,7 @@ public class FrappeAuthenticator extends AbstractAccountAuthenticator {
 
         //Log.d("frappe", TAG + "> authToken returned - " + authToken);
         Log.d("frappe", TAG + "> openid isnull - " + openIDProfile.isNull("email"));
+        Log.d("frappe", TAG + "> at isnull - " + accessToken);
 
         // Lets give another try to authenticate the user
         if (TextUtils.isEmpty(accessToken) || openIDProfile.isNull("email")) {
