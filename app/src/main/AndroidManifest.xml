@@ -19,21 +19,21 @@
     <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY" />
 
     <application
+        android:name=".sync.ApplicationController"
         android:icon="@drawable/frappe"
-        android:label="@string/app_name"
-        android:name=".sync.ApplicationController">
+        android:label="@string/app_name">
 
         <!-- *** Not really needed here, but convenient for copying to other apps that will use this module *** -->
         <provider
+            android:name=".sync.ContactProvider"
             android:authorities="io.frappe.frappeauthenticator"
-            android:name="io.frappe.frappeauthenticator.sync.ContactProvider"
             android:exported="true"
-            android:syncable="true"
-            android:supportsUploading="false"/>
+            android:supportsUploading="false"
+            android:syncable="true" />
 
         <activity
             android:name=".authenticator.AuthenticatorActivity"
-            android:exported="true"/>
+            android:exported="true" />
 
         <service android:name=".authenticator.FrappeAuthenticatorService">
             <intent-filter>
@@ -55,9 +55,20 @@
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_contacts" />
-             <meta-data
-                 android:name="android.provider.CONTACTS_STRUCTURE"
-                 android:resource="@xml/contacts" />
+            <meta-data
+                android:name="android.provider.CONTACTS_STRUCTURE"
+                android:resource="@xml/contacts" />
         </service>
+
+        <activity android:name=".sync.ProfileActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="vnd.android.cursor.item/vnd.io.frappe.frappeauthenticator.contact"/>
+            </intent-filter>
+
+        </activity>
     </application>
+
 </manifest>
