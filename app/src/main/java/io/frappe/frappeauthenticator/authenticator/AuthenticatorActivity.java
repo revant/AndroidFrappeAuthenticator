@@ -186,17 +186,21 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
         String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
         String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
+        String authtoken = null;
         final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
 
-        if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
+        if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, true)) {
             Log.d("frappe", TAG + "> finishLogin > addAccountExplicitly");
-            String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
+            authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
             String authtokenType = mAuthTokenType;
 
             // Creating the account on the device and setting the auth token we got
             // (Not setting the auth token will cause another call to the server to authenticate the user)
             mAccountManager.addAccountExplicitly(account, accountPassword, null);
+            System.out.println(authtoken);
+
             mAccountManager.setAuthToken(account, authtokenType, authtoken);
+
             mAccountManager.setUserData(account, "authtoken", authtoken);
             setAccountAuthenticatorResult(getIntent().getExtras());
             setResult(RESULT_OK,getIntent());
@@ -212,9 +216,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.d("frappe", TAG + "> finishLogin > setPassword");
+            Log.d("frappe", TAG + "> finishLogin > setPassword new "+authtoken);
         } else {
-            Log.d("frappe", TAG + "> finishLogin > setPassword");
+            Log.d("frappe", TAG + "> finishLogin > setPassword no new login"+authtoken);
             mAccountManager.setPassword(account, accountPassword);
         }
 
