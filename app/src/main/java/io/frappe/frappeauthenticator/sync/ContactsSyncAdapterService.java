@@ -10,6 +10,7 @@ import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.OperationApplicationException;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import io.frappe.frappeauthenticator.R;
 import io.frappe.frappeauthenticator.authenticator.AccountGeneral;
 
 /**
@@ -96,6 +98,7 @@ public class ContactsSyncAdapterService extends Service {
                     server.getContacts(frappeServer,bearerToken.getString("access_token"),new FrappeServerCallback() {
                         @Override
                         public void onSuccessJSONObject(JSONObject response) {
+
                             // Load the local app contacts
                             ArrayList<ContentProviderOperation> operationList = new ArrayList<ContentProviderOperation>();
                             HashMap<String, Long> localContacts = new HashMap<String, Long>();
@@ -113,14 +116,18 @@ public class ContactsSyncAdapterService extends Service {
                             String selection = "raw_contact_id IN (SELECT data._id from data)";
                             String[] selectionArgs = new String[]{"value1", "value2"};
                             Cursor phones = mContentResolver.query(
-                                    ContactsContract.RawContacts.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, account.name).appendQueryParameter(
+                                    ContactsContract.Data.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, account.name).appendQueryParameter(
                                             ContactsContract.RawContacts.ACCOUNT_TYPE, account.type).build(),
                                     null, //columns
                                     null, //selection
                                     null, //selectionArgs
                                     null); //Order by
                             phones.moveToFirst();
-
+                            String[] tempFields = new String[] {
+                                    ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, ContactsContract.CommonDataKinds.GroupMembership.GROUP_SOURCE_ID};
+                            Cursor tempCur = mContentResolver.query(ContactsContract.Data.CONTENT_URI, tempFields,
+                                    ContactsContract.Contacts.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE + "'",
+                                    null, null);
                             System.out.println(DatabaseUtils.dumpCursorToString(phones));
                             phones.close();
                             JSONArray contactsList = new JSONArray();
@@ -203,6 +210,13 @@ public class ContactsSyncAdapterService extends Service {
                 .withValue(ContactsContract.RawContacts.RAW_CONTACT_IS_READ_ONLY,"1")
                 .withValue(ContactsContract.RawContacts.SYNC1,contactName)
                 .withValue(ContactsContract.RawContacts.AGGREGATION_MODE, ContactsContract.RawContacts.AGGREGATION_MODE_DEFAULT)
+                .build());
+
+        // this is for display name
+        op_list.add(ContentProviderOperation.newInsert(addCallerIsSyncAdapterParameter(ContactsContract.Settings.CONTENT_URI, true))
+                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, AccountGeneral.ACCOUNT_NAME)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, AccountGeneral.ACCOUNT_TYPE)
+                .withValue(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
                 .build());
 
         // first and last names
@@ -295,6 +309,32 @@ public class ContactsSyncAdapterService extends Service {
                     .withValue(ContactsContract.CommonDataKinds.Organization.TITLE, designation)
                     .build());
         }
+
+        op_list.add(ContentProviderOperation.newInsert(addCallerIsSyncAdapterParameter(ContactsContract.Data.CONTENT_URI, true))
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                .withValue(ContactsContract.Data.MIMETYPE, "vnd.android.cursor.item/vnd.io.frappe.frappeauthenticator.contact")
+                .withValue(ContactsContract.Data.DATA1, firstName)
+                .withValue(ContactsContract.Data.DATA2, lastName)
+                .withValue(ContactsContract.Data.DATA3, phone)
+                .withValue(ContactsContract.Data.DATA4, mobileNo)
+                .withValue(ContactsContract.Data.DATA5, emailID)
+                .withValue(ContactsContract.Data.DATA6, contactName)
+                .build());
+
+//        op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+//                .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
+//                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE)
+//                .withValue(ContactsContract.CommonDataKinds.GroupMembership.GROUP_SOURCE_ID, 6)
+//        .build());
+
+//        op_list.add(ContentProviderOperation.newInsert(ContactsContract.StatusUpdates.CONTENT_URI)
+//                .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
+//                .withValue(ContactsContract.StatusUpdates.PROTOCOL, "io.frappe.frappeauthenticator")
+//                .withValue(ContactsContract.StatusUpdates.IM_HANDLE, contactName)
+//                .withValue(ContactsContract.StatusUpdates.STATUS_RES_PACKAGE, "io.frappe.frappeauthenticator")
+//                .withValue(ContactsContract.StatusUpdates.STATUS_LABEL, R.string.app_name)
+//                .withValue(ContactsContract.StatusUpdates.STATUS_ICON, R.drawable.frappe)
+//        .build());
 
         try{
             ContentProviderResult[] results = mContentResolver.applyBatch(ContactsContract.AUTHORITY, op_list);

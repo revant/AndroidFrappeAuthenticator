@@ -60,7 +60,8 @@
                 android:resource="@xml/contacts" />
         </service>
 
-        <activity android:name=".sync.ProfileActivity">
+        <activity android:name=".sync.ProfileActivity"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>

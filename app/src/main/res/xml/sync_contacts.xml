@@ -3,6 +3,4 @@
     android:contentAuthority="com.android.contacts"
     android:accountType="io.frappe.frappeauthenticator"
     android:userVisible="true"
-    android:allowParallelSyncs="true"
-    android:isAlwaysSyncable="true"
     android:supportsUploading="false" />
