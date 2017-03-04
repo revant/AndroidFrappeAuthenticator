@@ -60,8 +60,10 @@
                 android:resource="@xml/contacts" />
         </service>
 
-        <activity android:name=".sync.ProfileActivity"
-            android:exported="true">
+        <activity
+            android:name=".sync.ProfileActivity"
+            android:exported="true"
+            android:label="ERPNext Contacts">
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>

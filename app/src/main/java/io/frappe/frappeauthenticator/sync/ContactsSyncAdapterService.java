@@ -113,23 +113,7 @@ public class ContactsSyncAdapterService extends Service {
                             catch (Exception e){
                                 e.printStackTrace();
                             }
-                            String selection = "raw_contact_id IN (SELECT data._id from data)";
-                            String[] selectionArgs = new String[]{"value1", "value2"};
-                            Cursor phones = mContentResolver.query(
-                                    ContactsContract.Data.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, account.name).appendQueryParameter(
-                                            ContactsContract.RawContacts.ACCOUNT_TYPE, account.type).build(),
-                                    null, //columns
-                                    null, //selection
-                                    null, //selectionArgs
-                                    null); //Order by
-                            phones.moveToFirst();
-                            String[] tempFields = new String[] {
-                                    ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, ContactsContract.CommonDataKinds.GroupMembership.GROUP_SOURCE_ID};
-                            Cursor tempCur = mContentResolver.query(ContactsContract.Data.CONTENT_URI, tempFields,
-                                    ContactsContract.Contacts.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE + "'",
-                                    null, null);
-                            System.out.println(DatabaseUtils.dumpCursorToString(phones));
-                            phones.close();
+
                             JSONArray contactsList = new JSONArray();
                             try {
                                 contactsList = response.getJSONArray("data");
@@ -137,8 +121,13 @@ public class ContactsSyncAdapterService extends Service {
                                     JSONObject object = null;
                                     try {
                                         object = contactsList.getJSONObject(i);
+                                        ContactsHelper cHelper = new ContactsHelper();
                                         if (!localContacts.containsKey(object.getString("name"))) {
-                                            addContact(account, object);
+                                            cHelper.addContact(account, object, mContentResolver);
+                                        }
+                                        else{
+                                            cHelper.deleteContact(account, object.getString("name"), mContentResolver);
+                                            cHelper.addContact(account, object, mContentResolver);
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -169,186 +158,5 @@ public class ContactsSyncAdapterService extends Service {
         } catch (AuthenticatorException e) {
             e.printStackTrace();
         }
-    }
-
-    private static void addContact(Account account, JSONObject contactInfo) {
-
-        String contactName = null;
-        String supplierName = null;
-        String customerName = null;
-        String salePartnerName = null;
-        String lastName = null;
-        String emailID = null;
-        String mobileNo = null;
-        String firstName = null;
-        String department = null;
-        String designation = null;
-        String phone = null;
-
-        try {
-            contactName = contactInfo.getString("name");
-            customerName = contactInfo.getString("customer_name");
-            supplierName = contactInfo.getString("supplier_name");
-            salePartnerName = contactInfo.getString("sales_partner");
-            lastName = contactInfo.getString("last_name");
-            emailID = contactInfo.getString("email_id");
-            mobileNo = contactInfo.getString("mobile_no");
-            firstName = contactInfo.getString("first_name");
-            department = contactInfo.getString("department");
-            designation = contactInfo.getString("designation");
-            phone = contactInfo.getString("phone");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        //Create our RawContact
-        ArrayList<ContentProviderOperation> op_list = new ArrayList<ContentProviderOperation>();
-        op_list.add(ContentProviderOperation.newInsert(addCallerIsSyncAdapterParameter(
-                ContactsContract.RawContacts.CONTENT_URI, true))
-                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
-                .withValue(ContactsContract.RawContacts.RAW_CONTACT_IS_READ_ONLY,"1")
-                .withValue(ContactsContract.RawContacts.SYNC1,contactName)
-                .withValue(ContactsContract.RawContacts.AGGREGATION_MODE, ContactsContract.RawContacts.AGGREGATION_MODE_DEFAULT)
-                .build());
-
-        // this is for display name
-        op_list.add(ContentProviderOperation.newInsert(addCallerIsSyncAdapterParameter(ContactsContract.Settings.CONTENT_URI, true))
-                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, AccountGeneral.ACCOUNT_NAME)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, AccountGeneral.ACCOUNT_TYPE)
-                .withValue(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
-                .build());
-
-        // first and last names
-        if (firstName!=null){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, firstName)
-                    .build());
-        }
-        if (lastName!=null){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, lastName)
-                    .build());
-        }
-
-        // add phone number
-        if (phone!=null) {
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
-                    .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
-                    .build());
-        }
-
-        //add mobile number
-        if (mobileNo!=null) {
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, mobileNo)
-                    .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
-                    .build());
-        }
-
-        //add email
-        if (emailID!=null) {
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Email.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Email.DATA, emailID)
-                    .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
-                    .build());
-        }
-
-        //add Customer
-        if(customerName!=null){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, customerName)
-                    .build());
-        }
-
-        //add Supplier
-        if(supplierName!=null){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, supplierName)
-                    .build());
-        }
-
-        //add Sales Partner
-        if(salePartnerName!=null){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, salePartnerName)
-                    .build());
-        }
-
-        //add Department
-        if(department!=null){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Organization.DEPARTMENT, department)
-                    .build());
-        }
-
-        //add Designation
-        if(designation!=null){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Organization.TITLE, designation)
-                    .build());
-        }
-
-        op_list.add(ContentProviderOperation.newInsert(addCallerIsSyncAdapterParameter(ContactsContract.Data.CONTENT_URI, true))
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE, "vnd.android.cursor.item/vnd.io.frappe.frappeauthenticator.contact")
-                .withValue(ContactsContract.Data.DATA1, firstName)
-                .withValue(ContactsContract.Data.DATA2, lastName)
-                .withValue(ContactsContract.Data.DATA3, phone)
-                .withValue(ContactsContract.Data.DATA4, mobileNo)
-                .withValue(ContactsContract.Data.DATA5, emailID)
-                .withValue(ContactsContract.Data.DATA6, contactName)
-                .build());
-
-//        op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-//                .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
-//                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE)
-//                .withValue(ContactsContract.CommonDataKinds.GroupMembership.GROUP_SOURCE_ID, 6)
-//        .build());
-
-//        op_list.add(ContentProviderOperation.newInsert(ContactsContract.StatusUpdates.CONTENT_URI)
-//                .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
-//                .withValue(ContactsContract.StatusUpdates.PROTOCOL, "io.frappe.frappeauthenticator")
-//                .withValue(ContactsContract.StatusUpdates.IM_HANDLE, contactName)
-//                .withValue(ContactsContract.StatusUpdates.STATUS_RES_PACKAGE, "io.frappe.frappeauthenticator")
-//                .withValue(ContactsContract.StatusUpdates.STATUS_LABEL, R.string.app_name)
-//                .withValue(ContactsContract.StatusUpdates.STATUS_ICON, R.drawable.frappe)
-//        .build());
-
-        try{
-            ContentProviderResult[] results = mContentResolver.applyBatch(ContactsContract.AUTHORITY, op_list);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    private static Uri addCallerIsSyncAdapterParameter(Uri uri, boolean isSyncOperation) {
-        if (isSyncOperation) {
-            return uri.buildUpon()
-                    .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER,
-                            "true").build();
-        }
-        return uri;
     }
 }
