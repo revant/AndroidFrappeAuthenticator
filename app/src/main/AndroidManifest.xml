@@ -63,7 +63,7 @@
         <activity
             android:name=".sync.ProfileActivity"
             android:exported="true"
-            android:label="ERPNext Contacts">
+            android:label="ERPNext Contact">
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>

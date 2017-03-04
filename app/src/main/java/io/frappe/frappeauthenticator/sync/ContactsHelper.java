@@ -192,6 +192,12 @@ public class ContactsHelper {
                 .withValue(ContactsContract.Data.DATA4, phone)
                 .withValue(ContactsContract.Data.DATA5, emailID)
                 .withValue(ContactsContract.Data.DATA6, firstName)
+                .withValue(ContactsContract.Data.DATA7, lastName)
+                .withValue(ContactsContract.Data.DATA8, designation)
+                .withValue(ContactsContract.Data.DATA9, department)
+                .withValue(ContactsContract.Data.DATA10, customerName)
+                .withValue(ContactsContract.Data.DATA11, supplierName)
+                .withValue(ContactsContract.Data.DATA12, salePartnerName)
                 .build());
 
         try{
