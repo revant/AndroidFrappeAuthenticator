@@ -3,4 +3,5 @@
     <string name="app_name">Frappe Authenticator</string>
     <string name="label">Frappe</string>
     <string name="login_label">Log in</string>
+    <string name="title_activity_viewing">ViewingActivity</string>
 </resources>

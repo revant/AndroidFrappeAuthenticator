@@ -57,40 +57,6 @@ public class ContactsHelper {
             e.printStackTrace();
         }
 
-        //Create our RawContact
-        ArrayList<ContentProviderOperation> op_list = new ArrayList<ContentProviderOperation>();
-        op_list.add(ContentProviderOperation.newInsert(addCallerIsSyncAdapterParameter(
-                ContactsContract.RawContacts.CONTENT_URI, true))
-                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
-                .withValue(ContactsContract.RawContacts.RAW_CONTACT_IS_READ_ONLY,"1")
-                .withValue(ContactsContract.RawContacts.SYNC1,contactName)
-                .withValue(ContactsContract.RawContacts.AGGREGATION_MODE, ContactsContract.RawContacts.AGGREGATION_MODE_DEFAULT)
-                .build());
-
-        // this is for display name
-        op_list.add(ContentProviderOperation.newInsert(addCallerIsSyncAdapterParameter(ContactsContract.Settings.CONTENT_URI, true))
-                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, AccountGeneral.ACCOUNT_NAME)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, AccountGeneral.ACCOUNT_TYPE)
-                .withValue(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
-                .build());
-
-        // first and last names
-        if (firstName!=null){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, firstName)
-                    .build());
-        }
-        if (lastName!=null){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, lastName)
-                    .build());
-        }
-
         if (firstName!=null && lastName!=null){
             displayName = firstName + " " + lastName;
         }
@@ -101,15 +67,45 @@ public class ContactsHelper {
             displayName = lastName;
         }
 
-        if (displayName!=null){
+        //Create our RawContact
+        ArrayList<ContentProviderOperation> op_list = new ArrayList<ContentProviderOperation>();
+        op_list.add(ContentProviderOperation.newInsert(addCallerIsSyncAdapterParameter(
+                ContactsContract.RawContacts.CONTENT_URI, true))
+                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
+                .withValue(ContactsContract.RawContacts.RAW_CONTACT_IS_READ_ONLY,"1")
+                .withValue(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
+                .withValue(ContactsContract.RawContacts.SYNC1,contactName)
+                .withValue(ContactsContract.RawContacts.AGGREGATION_MODE, ContactsContract.RawContacts.AGGREGATION_MODE_DEFAULT)
+                .build());
+
+        // first and last names
+
+        if (displayName!=null && !displayName.isEmpty()){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
                     .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, displayName)
                     .build());
         }
+
+        if (firstName!=null && !firstName.isEmpty()){
+            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, firstName)
+                    .build());
+        }
+
+        if (lastName!=null && !lastName.isEmpty()){
+            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, lastName)
+                    .build());
+        }
         // add phone number
-        if (phone!=null) {
+        if (phone!=null && !phone.isEmpty()) {
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
@@ -119,7 +115,7 @@ public class ContactsHelper {
         }
 
         //add mobile number
-        if (mobileNo!=null) {
+        if (mobileNo!=null && !mobileNo.isEmpty()) {
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
@@ -129,17 +125,17 @@ public class ContactsHelper {
         }
 
         //add email
-        if (emailID!=null) {
+        if (emailID!=null && !emailID.isEmpty()) {
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Email.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Email.DATA, emailID)
+                    .withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, emailID)
                     .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
                     .build());
         }
 
         //add Customer
-        if(customerName!=null){
+        if(customerName!=null && !customerName.isEmpty()){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
@@ -148,7 +144,7 @@ public class ContactsHelper {
         }
 
         //add Supplier
-        if(supplierName!=null){
+        if(supplierName!=null && !supplierName.isEmpty()){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
@@ -157,7 +153,7 @@ public class ContactsHelper {
         }
 
         //add Sales Partner
-        if(salePartnerName!=null){
+        if(salePartnerName!=null && !salePartnerName.isEmpty()){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
@@ -166,7 +162,7 @@ public class ContactsHelper {
         }
 
         //add Department
-        if(department!=null){
+        if(department!=null && !department.isEmpty()){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
@@ -175,7 +171,7 @@ public class ContactsHelper {
         }
 
         //add Designation
-        if(designation!=null){
+        if(designation!=null && !designation.isEmpty()){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)

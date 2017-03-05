@@ -64,14 +64,17 @@
             android:name=".sync.ProfileActivity"
             android:exported="true"
             android:label="ERPNext Contact">
-
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="vnd.android.cursor.item/vnd.io.frappe.frappeauthenticator.contact"/>
-            </intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="vnd.android.cursor.item/vnd.io.frappe.frappeauthenticator.contact" />
+            </intent-filter>
         </activity>
+        <activity
+            android:name=".sync.ViewingActivity"
+            android:label="@string/title_activity_viewing"></activity>
     </application>
 
 </manifest>
