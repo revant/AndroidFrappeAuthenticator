@@ -73,8 +73,7 @@ public class ContactsHelper {
                 ContactsContract.RawContacts.CONTENT_URI, true))
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
-                .withValue(ContactsContract.RawContacts.RAW_CONTACT_IS_READ_ONLY,"1")
-                .withValue(ContactsContract.Settings.UNGROUPED_VISIBLE, 1)
+                .withValue(ContactsContract.RawContacts.RAW_CONTACT_IS_READ_ONLY,"1")git
                 .withValue(ContactsContract.RawContacts.SYNC1,contactName)
                 .withValue(ContactsContract.RawContacts.AGGREGATION_MODE, ContactsContract.RawContacts.AGGREGATION_MODE_DEFAULT)
                 .build());
