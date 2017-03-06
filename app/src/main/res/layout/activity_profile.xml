@@ -10,12 +10,112 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="io.frappe.frappeauthenticator.sync.ProfileActivity"
     android:theme="@android:style/Theme.Material.Light.DarkActionBar"
-    >
-    <ListView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/profiletext"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:textColor="#474343"/>
+    android:background="@android:color/background_light">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contact Name"
+            android:background="@drawable/border"
+            android:textSize="14dp"
+            android:padding="16dp"
+            android:id="@+id/contactNameLabel"
+            android:visibility="gone"
+            android:textStyle="normal|bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:textSize="14dp"
+            android:padding="16dp"
+            android:id="@+id/contactName"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Phone"
+            android:background="@drawable/border"
+            android:textSize="14dp"
+            android:padding="16dp"
+            android:id="@+id/contactPhoneLabel"
+            android:textStyle="normal|bold"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:textSize="14dp"
+            android:padding="16dp"
+            android:id="@+id/contactPhone"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mobile"
+            android:background="@drawable/border"
+            android:textSize="14dp"
+            android:padding="16dp"
+            android:textStyle="normal|bold"
+            android:id="@+id/contactMobileLabel"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:textSize="14dp"
+            android:padding="16dp"
+            android:id="@+id/contactMobile"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:text="Email"
+            android:textSize="14dp"
+            android:padding="16dp"
+            android:textStyle="normal|bold"
+            android:id="@+id/contactEmailLabel"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:textSize="14dp"
+            android:padding="16dp"
+            android:id="@+id/contactEmail"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:text="Organization"
+            android:textStyle="normal|bold"
+            android:textSize="14dp"
+            android:padding="16dp"
+            android:id="@+id/contactOrganizationLabel"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:textSize="14dp"
+            android:padding="16dp"
+            android:id="@+id/contactOrganization"
+            android:visibility="gone"/>
+
+    </LinearLayout>
 </RelativeLayout>

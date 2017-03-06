@@ -1,22 +1,13 @@
 package io.frappe.frappeauthenticator.sync;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import io.frappe.frappeauthenticator.R;
 
@@ -27,95 +18,115 @@ public class ProfileActivity extends Activity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        ListView listView = (ListView) findViewById(R.id.profiletext);
+
+        TextView contactNameLabel = (TextView) findViewById(R.id.contactNameLabel);
+        TextView contactName = (TextView) findViewById(R.id.contactName);
+
+        TextView contactPhoneLabel = (TextView) findViewById(R.id.contactPhoneLabel);
+        TextView contactPhone = (TextView) findViewById(R.id.contactPhone);
+
+        TextView contactMobileLabel = (TextView) findViewById(R.id.contactMobileLabel);
+        TextView contactMobile = (TextView) findViewById(R.id.contactMobile);
+
+        TextView contactEmailLabel = (TextView) findViewById(R.id.contactEmailLabel);
+        TextView contactEmail= (TextView) findViewById(R.id.contactEmail);
+
+        TextView contactOrganizationLabel = (TextView) findViewById(R.id.contactOrganizationLabel);
+        TextView contactOrganization = (TextView) findViewById(R.id.contactOrganization);
+
         Uri intentData = getIntent().getData();
         if ((intentData)!=null)
         {
-            List<String> contactInfo = new ArrayList<String>();
-            ArrayAdapter adapter = new ArrayAdapter<String>(ProfileActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, contactInfo);
             Cursor cursor = managedQuery(intentData, null, null, null, null);
-            System.out.println(DatabaseUtils.dumpCursorToString(cursor));
+
             if (cursor.moveToNext())
             {
-                String displayName = cursor.getString(cursor.getColumnIndex("DATA2"));
-//                if (displayName!=null && !displayName.isEmpty()){
-//                    contactInfo.add("Name");
-//                    contactInfo.add(displayName);
-//                }
+                final String displayName = cursor.getString(cursor.getColumnIndex("DATA2"));
+                if (!displayName.equals("null")){
+                    contactNameLabel.setVisibility(View.VISIBLE);
+                    contactName.setVisibility(View.VISIBLE);
+                    contactName.setText(displayName);
+                }
 
-                String mobileNo = cursor.getString(cursor.getColumnIndex("DATA1"));
+                final String mobileNo = cursor.getString(cursor.getColumnIndex("DATA1"));
                 if (!mobileNo.equals("null")){
-                    contactInfo.add("Mobile No");
-                    contactInfo.add(mobileNo);
+                    contactMobileLabel.setVisibility(View.VISIBLE);
+                    contactMobile.setVisibility(View.VISIBLE);
+                    contactMobile.setText(mobileNo);
+                    contactMobile.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent phoneIntent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mobileNo, null));
+                            startActivity(phoneIntent);
+                        }
+                    });
                 }
 
-                String phone = cursor.getString(cursor.getColumnIndex("DATA4"));
+                final String phone = cursor.getString(cursor.getColumnIndex("DATA4"));
                 if (!phone.equals("null")){
-                    contactInfo.add("Phone");
-                    contactInfo.add(phone);
+                    contactPhoneLabel.setVisibility(View.VISIBLE);
+                    contactPhone.setVisibility(View.VISIBLE);
+                    contactPhone.setText(phone);
+                    contactPhone.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent phoneIntent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                            startActivity(phoneIntent);
+                        }
+                    });
                 }
 
-                String emailID = cursor.getString(cursor.getColumnIndex("DATA5"));
+                final String emailID = cursor.getString(cursor.getColumnIndex("DATA5"));
                 if (!emailID.equals("null")){
-                    contactInfo.add("EMail");
-                    contactInfo.add(emailID);
-                }
-
-                String customerName = cursor.getString(cursor.getColumnIndex("DATA10"));
-                if (!customerName.equals("null")){
-                    contactInfo.add("Customer Name");
-                    contactInfo.add(customerName);
-                }
-
-                String supplierName = cursor.getString(cursor.getColumnIndex("DATA11"));
-                if (!supplierName.equals("null")){
-                    contactInfo.add("Supplier Name");
-                    contactInfo.add(supplierName);
-                }
-
-                String salesPartnerName = cursor.getString(cursor.getColumnIndex("DATA12"));
-                if (!salesPartnerName.equals("null")){
-                    contactInfo.add("Sales Partner Name");
-                    contactInfo.add(salesPartnerName);
-                }
-
-                String designation = cursor.getString(cursor.getColumnIndex("DATA8"));
-                if (!designation.equals("null")){
-                    contactInfo.add("Designation");
-                    contactInfo.add(designation);
-                }
-
-                String department = cursor.getString(cursor.getColumnIndex("DATA9"));
-                if (!department.equals("null")){
-                    contactInfo.add("Department");
-                    contactInfo.add(department);
-                }
-
-                String firstName = cursor.getString(cursor.getColumnIndex("DATA6"));
-                String lastName = cursor.getString(cursor.getColumnIndex("DATA7"));
-                String contactName = cursor.getString(cursor.getColumnIndex("DATA3"));
-
-                adapter=new ArrayAdapter<String>(ProfileActivity.this,
-                        android.R.layout.simple_list_item_1, android.R.id.text1,
-                        contactInfo);
-
-                listView.setAdapter(adapter);
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        if (parent.getItemAtPosition(position-1) == "Phone"){
-                            Intent phoneIntent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", parent.getItemAtPosition(position).toString(), null));
-                            startActivity(phoneIntent);
-                        } else if (parent.getItemAtPosition(position-1) == "Mobile No"){
-                            Intent phoneIntent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", parent.getItemAtPosition(position).toString(), null));
-                            startActivity(phoneIntent);
-                        } else if (parent.getItemAtPosition(position-1) == "EMail"){
+                    contactEmailLabel.setVisibility(View.VISIBLE);
+                    contactEmail.setVisibility(View.VISIBLE);
+                    contactEmail.setText(emailID);
+                    contactEmail.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
                             Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                                    "mailto",parent.getItemAtPosition(position).toString(), null));
+                                    "mailto", emailID , null));
                             startActivity(Intent.createChooser(emailIntent, "Send email..."));
                         }
-                    }
-                });
+                    });
+                }
+
+                final String customerName = cursor.getString(cursor.getColumnIndex("DATA10"));
+                if (!customerName.equals("null")){
+                    contactOrganizationLabel.setVisibility(View.VISIBLE);
+                    contactOrganization.setVisibility(View.VISIBLE);
+                    contactOrganization.setText(customerName);
+                }
+
+                final String supplierName = cursor.getString(cursor.getColumnIndex("DATA11"));
+                if (!supplierName.equals("null")){
+                    contactOrganizationLabel.setVisibility(View.VISIBLE);
+                    contactOrganization.setVisibility(View.VISIBLE);
+                    contactOrganization.setText(supplierName);
+                }
+
+                final String salesPartnerName = cursor.getString(cursor.getColumnIndex("DATA12"));
+                if (!salesPartnerName.equals("null")){
+                    contactOrganizationLabel.setVisibility(View.VISIBLE);
+                    contactOrganization.setVisibility(View.VISIBLE);
+                    contactOrganization.setText(salesPartnerName);
+                }
+
+//                String designation = cursor.getString(cursor.getColumnIndex("DATA8"));
+//                if (!designation.equals("null")){
+//                    contactInfo.add("Designation");
+//                    contactInfo.add(designation);
+//                }
+//
+//                String department = cursor.getString(cursor.getColumnIndex("DATA9"));
+//                if (!department.equals("null")){
+//                    contactInfo.add("Department");
+//                    contactInfo.add(department);
+//                }
+
+//                String firstName = cursor.getString(cursor.getColumnIndex("DATA6"));
+//                String lastName = cursor.getString(cursor.getColumnIndex("DATA7"));
+//                String sContactName = cursor.getString(cursor.getColumnIndex("DATA3"));
 
             }
         }
