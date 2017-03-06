@@ -57,13 +57,13 @@ public class ContactsHelper {
             e.printStackTrace();
         }
 
-        if (firstName!=null && lastName!=null){
+        if (!firstName.equals("null") && !lastName.equals("null")){
             displayName = firstName + " " + lastName;
         }
-        else if (firstName!=null && lastName.isEmpty()){
+        else if (!firstName.equals("null") && lastName.equals("null")){
             displayName = firstName;
         }
-        else if (lastName!=null && firstName.isEmpty()){
+        else if (!lastName.equals("null") && firstName.equals("null")){
             displayName = lastName;
         }
 
@@ -73,7 +73,7 @@ public class ContactsHelper {
                 ContactsContract.RawContacts.CONTENT_URI, true))
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
-                .withValue(ContactsContract.RawContacts.RAW_CONTACT_IS_READ_ONLY,"1")git
+                .withValue(ContactsContract.RawContacts.RAW_CONTACT_IS_READ_ONLY,"1")
                 .withValue(ContactsContract.RawContacts.SYNC1,contactName)
                 .withValue(ContactsContract.RawContacts.AGGREGATION_MODE, ContactsContract.RawContacts.AGGREGATION_MODE_DEFAULT)
                 .build());
@@ -88,7 +88,7 @@ public class ContactsHelper {
                     .build());
         }
 
-        if (firstName!=null && !firstName.isEmpty()){
+        if (!firstName.equals("null")){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
@@ -96,7 +96,7 @@ public class ContactsHelper {
                     .build());
         }
 
-        if (lastName!=null && !lastName.isEmpty()){
+        if (!lastName.equals("null")){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
@@ -104,7 +104,7 @@ public class ContactsHelper {
                     .build());
         }
         // add phone number
-        if (phone!=null && !phone.isEmpty()) {
+        if (!phone.equals("null")) {
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
@@ -114,7 +114,7 @@ public class ContactsHelper {
         }
 
         //add mobile number
-        if (mobileNo!=null && !mobileNo.isEmpty()) {
+        if (!mobileNo.equals("null")) {
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
@@ -124,7 +124,7 @@ public class ContactsHelper {
         }
 
         //add email
-        if (emailID!=null && !emailID.isEmpty()) {
+        if (!emailID.equals("null")) {
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Email.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
@@ -134,7 +134,7 @@ public class ContactsHelper {
         }
 
         //add Customer
-        if(customerName!=null && !customerName.isEmpty()){
+        if(!customerName.equals("null")){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
@@ -143,7 +143,7 @@ public class ContactsHelper {
         }
 
         //add Supplier
-        if(supplierName!=null && !supplierName.isEmpty()){
+        if(!supplierName.equals("null")){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
@@ -152,7 +152,7 @@ public class ContactsHelper {
         }
 
         //add Sales Partner
-        if(salePartnerName!=null && !salePartnerName.isEmpty()){
+        if(!salePartnerName.equals("null")){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
@@ -161,7 +161,7 @@ public class ContactsHelper {
         }
 
         //add Department
-        if(department!=null && !department.isEmpty()){
+        if(!department.equals("null")){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
@@ -170,7 +170,7 @@ public class ContactsHelper {
         }
 
         //add Designation
-        if(designation!=null && !designation.isEmpty()){
+        if(!designation.equals("null")){
             op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                     .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
                     .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)

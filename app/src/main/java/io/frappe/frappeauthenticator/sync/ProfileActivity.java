@@ -44,49 +44,49 @@ public class ProfileActivity extends Activity {
 //                }
 
                 String mobileNo = cursor.getString(cursor.getColumnIndex("DATA1"));
-                if (mobileNo!=null && !mobileNo.isEmpty()){
+                if (!mobileNo.equals("null")){
                     contactInfo.add("Mobile No");
                     contactInfo.add(mobileNo);
                 }
 
                 String phone = cursor.getString(cursor.getColumnIndex("DATA4"));
-                if (phone!=null && !phone.isEmpty()){
+                if (!phone.equals("null")){
                     contactInfo.add("Phone");
                     contactInfo.add(phone);
                 }
 
                 String emailID = cursor.getString(cursor.getColumnIndex("DATA5"));
-                if (emailID!= null && !emailID.isEmpty()){
+                if (!emailID.equals("null")){
                     contactInfo.add("EMail");
                     contactInfo.add(emailID);
                 }
 
                 String customerName = cursor.getString(cursor.getColumnIndex("DATA10"));
-                if (customerName!=null && !customerName.isEmpty()){
+                if (!customerName.equals("null")){
                     contactInfo.add("Customer Name");
                     contactInfo.add(customerName);
                 }
 
                 String supplierName = cursor.getString(cursor.getColumnIndex("DATA11"));
-                if (supplierName!=null && !supplierName.isEmpty()){
+                if (!supplierName.equals("null")){
                     contactInfo.add("Supplier Name");
                     contactInfo.add(supplierName);
                 }
 
                 String salesPartnerName = cursor.getString(cursor.getColumnIndex("DATA12"));
-                if (salesPartnerName!=null && !salesPartnerName.isEmpty()){
+                if (!salesPartnerName.equals("null")){
                     contactInfo.add("Sales Partner Name");
                     contactInfo.add(salesPartnerName);
                 }
 
                 String designation = cursor.getString(cursor.getColumnIndex("DATA8"));
-                if (designation!=null && !designation.isEmpty()){
+                if (!designation.equals("null")){
                     contactInfo.add("Designation");
                     contactInfo.add(designation);
                 }
 
                 String department = cursor.getString(cursor.getColumnIndex("DATA9"));
-                if (department!=null && !department.isEmpty()){
+                if (!department.equals("null")){
                     contactInfo.add("Department");
                     contactInfo.add(department);
                 }
