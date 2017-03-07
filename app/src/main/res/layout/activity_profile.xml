@@ -31,7 +31,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/border"
+            android:background="?android:attr/selectableItemBackground"
             android:textSize="14dp"
             android:padding="16dp"
             android:id="@+id/contactName"
@@ -51,10 +51,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/border"
+            android:background="?android:attr/selectableItemBackground"
             android:textSize="14dp"
             android:padding="16dp"
             android:id="@+id/contactPhone"
+            android:clickable="true"
             android:visibility="gone"/>
 
         <TextView
@@ -71,10 +72,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/border"
+            android:background="?android:attr/selectableItemBackground"
             android:textSize="14dp"
             android:padding="16dp"
             android:id="@+id/contactMobile"
+            android:clickable="true"
             android:visibility="gone"/>
 
         <TextView
@@ -91,10 +93,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/border"
             android:textSize="14dp"
             android:padding="16dp"
             android:id="@+id/contactEmail"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
             android:visibility="gone"/>
 
         <TextView
@@ -111,7 +114,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/border"
+            android:background="?android:attr/selectableItemBackground"
             android:textSize="14dp"
             android:padding="16dp"
             android:id="@+id/contactOrganization"
