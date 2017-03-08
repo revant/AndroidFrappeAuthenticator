@@ -124,6 +124,11 @@ public class EventsSyncAdapterService extends Service {
                                             if (!localEvents.containsKey(eventInfo.getString("name"))) {
                                                 eHelper.addEvent(account, mContentResolver, eventInfo, calId);
                                             }
+                                            else{
+                                                long eventId = localEvents.get(eventInfo.getString("name"));
+                                                eHelper.deleteEvent(account, mContentResolver, eventId);
+                                                eHelper.addEvent(account, mContentResolver, eventInfo, calId);
+                                            }
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }

@@ -106,6 +106,13 @@ public class EventsHelper {
         Uri uri = mContentResolver.insert(asSyncAdapter(CalendarContract.Events.CONTENT_URI, account), values);
     }
 
+    static public void deleteEvent(Account account, ContentResolver mContentResolver, long eventID){
+        ContentValues values = new ContentValues();
+        Uri deleteUri = ContentUris.withAppendedId(asSyncAdapter(CalendarContract.Events.CONTENT_URI, account), eventID);
+        int rows = mContentResolver.delete(deleteUri, null, null);
+        Log.i("deleteEvent", "Rows deleted: " + rows);
+    }
+
     static public Uri asSyncAdapter(Uri uri, Account account) {
         return uri.buildUpon()
                 .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER,"true")
