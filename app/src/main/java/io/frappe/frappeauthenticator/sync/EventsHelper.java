@@ -18,7 +18,10 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class EventsHelper {
 
@@ -75,6 +78,32 @@ public class EventsHelper {
         int rows = mContentResolver.update(updateUri, values, null, null);
         Log.i("updateCal", "Rows updated: " + rows);
 
+    }
+
+    static public void addEvent(Account account, ContentResolver mContentResolver, JSONObject eventInfo, long calID){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        ContentValues values = new ContentValues();
+        values.put(CalendarContract.Events.CALENDAR_ID, calID);
+        try {
+            Calendar beginTime = Calendar.getInstance();
+            Calendar endTime = Calendar.getInstance();
+            try {
+                beginTime.setTime(sdf.parse(eventInfo.getString("starts_on")));
+                endTime.setTime(sdf.parse(eventInfo.getString("ends_on")));
+                long startMillis = beginTime.getTimeInMillis();
+                long endMillis = endTime.getTimeInMillis();
+                values.put(CalendarContract.Events.DTSTART, startMillis);
+                values.put(CalendarContract.Events.DTEND, endMillis);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            values.put(CalendarContract.Events.SYNC_DATA1, eventInfo.getString("name"));
+            values.put(CalendarContract.Events.TITLE, eventInfo.getString("subject"));
+            values.put(CalendarContract.Events.DESCRIPTION, eventInfo.getString("description"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Uri uri = mContentResolver.insert(asSyncAdapter(CalendarContract.Events.CONTENT_URI, account), values);
     }
 
     static public Uri asSyncAdapter(Uri uri, Account account) {

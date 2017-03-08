@@ -21,6 +21,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.BaseColumns;
 import android.provider.CalendarContract;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -99,9 +100,40 @@ public class EventsSyncAdapterService extends Service {
                             long calId = 0;
                             calId = eHelper.queryCalender(account,mContentResolver);
                             if (calId!=0) {
-                                System.out.println(calId);
-                                eHelper.updateCalendar(account,mContentResolver,calId);
+                                //eHelper.updateCalendar(account,mContentResolver,calId);
+                                // Add events
+                                JSONArray eventList = new JSONArray();
+                                try {
+                                    eventList = response.getJSONArray("data");
+                                    for(int i=0;i<eventList.length();i++){
+                                        JSONObject eventInfo = null;
+                                        try {
+                                            eventInfo = eventList.getJSONObject(i);
+                                            HashMap<String, Long> localEvents = new HashMap<String, Long>();
+                                            try{
+                                                Uri eventsUri = CalendarContract.Events.CONTENT_URI.buildUpon().appendQueryParameter(CalendarContract.Events.ACCOUNT_NAME, account.name).appendQueryParameter(
+                                                        CalendarContract.Events.ACCOUNT_TYPE, account.type).build();
+                                                Cursor c1 = mContentResolver.query(eventsUri, new String[] { BaseColumns._ID, CalendarContract.Events.SYNC_DATA1 }, null, null, null);
+                                                while (c1.moveToNext()) {
+                                                    localEvents.put(c1.getString(1), c1.getLong(0));
+                                                }
+                                            }
+                                            catch (Exception e){
+                                                e.printStackTrace();
+                                            }
+                                            if (!localEvents.containsKey(eventInfo.getString("name"))) {
+                                                eHelper.addEvent(account, mContentResolver, eventInfo, calId);
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                ;
                             } else {
+                                // add Calender
                                 eHelper.insertCalendar(account,mContentResolver);
                             }
                             System.out.println(response.toString());
