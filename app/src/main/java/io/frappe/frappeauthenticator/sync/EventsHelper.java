@@ -11,9 +11,7 @@ import android.content.ContentResolver;
 import android.content.OperationApplicationException;
 import android.net.Uri;
 import android.os.RemoteException;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.provider.ContactsContract.RawContacts;
+import android.provider.CalendarContract;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,175 +22,50 @@ public class EventsHelper {
 
     public static void addEvent(Account account, JSONObject contactInfo, ContentResolver mContentResolver) {
 
-        String contactName = null;
-        String supplierName = null;
-        String customerName = null;
-        String salePartnerName = null;
-        String lastName = null;
-        String emailID = null;
-        String mobileNo = null;
-        String firstName = null;
-        String department = null;
-        String designation = null;
-        String phone = null;
-        String displayName = null;
+        // "event_type", "all_day", "subject", "description", "name", "starts_on", "ends_on"
+        String eventType = null;
+        String allDay = null;
+        String subject = null;
+        String description = null;
+        String eventName = null;
+        String startsOn = null;
+        String endsOn = null;
 
         try {
-            contactName = contactInfo.getString("name");
-            customerName = contactInfo.getString("customer_name");
-            supplierName = contactInfo.getString("supplier_name");
-            salePartnerName = contactInfo.getString("sales_partner");
-            lastName = contactInfo.getString("last_name");
-            emailID = contactInfo.getString("email_id");
-            mobileNo = contactInfo.getString("mobile_no");
-            firstName = contactInfo.getString("first_name");
-            department = contactInfo.getString("department");
-            designation = contactInfo.getString("designation");
-            phone = contactInfo.getString("phone");
+            eventType = contactInfo.getString("event_type");
+            allDay = contactInfo.getString("all_day");
+            subject = contactInfo.getString("subject");
+            description = contactInfo.getString("description");
+            eventName = contactInfo.getString("name");
+            startsOn = contactInfo.getString("starts_on");
+            endsOn = contactInfo.getString("ends_on");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        if (!firstName.equals("null") && !lastName.equals("null")){
-            displayName = firstName + " " + lastName;
-        }
-        else if (!firstName.equals("null") && lastName.equals("null")){
-            displayName = firstName;
-        }
-        else if (!lastName.equals("null") && firstName.equals("null")){
-            displayName = lastName;
-        }
-
-        //Create our RawContact
+        //Create our Event
         ArrayList<ContentProviderOperation> op_list = new ArrayList<ContentProviderOperation>();
         op_list.add(ContentProviderOperation.newInsert(addCallerIsSyncAdapterParameter(
-                RawContacts.CONTENT_URI, true))
-                .withValue(RawContacts.ACCOUNT_TYPE, account.type)
-                .withValue(RawContacts.ACCOUNT_NAME, account.name)
-                .withValue(RawContacts.RAW_CONTACT_IS_READ_ONLY,"1")
-                .withValue(RawContacts.SYNC1,contactName)
-                .withValue(RawContacts.AGGREGATION_MODE, RawContacts.AGGREGATION_MODE_DEFAULT)
+                CalendarContract.Calendars.CONTENT_URI, true))
+                .withValue(CalendarContract.Calendars.ACCOUNT_TYPE, account.type)
+                .withValue(CalendarContract.Calendars.ACCOUNT_NAME, account.name)
+                .withValue(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,CalendarContract.Calendars.CAL_ACCESS_READ)
                 .build());
 
-        // first and last names
+        // Event Data
 
-        if (displayName!=null && !displayName.isEmpty()){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
-                    .withValue(RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, displayName)
+           op_list.add(ContentProviderOperation.newInsert(CalendarContract.Events.CONTENT_URI)
+                    .withValueBackReference(CalendarContract.Events.CALENDAR_ID, 0)
+                    .withValue(CalendarContract.Events.SYNC_DATA1,eventName)
+                    .withValue(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startsOn)
+                    .withValue(CalendarContract.EXTRA_EVENT_END_TIME, endsOn)
+                    .withValue(CalendarContract.EXTRA_EVENT_ALL_DAY, allDay)
+                    .withValue(CalendarContract.Events.TITLE, subject)
+                    .withValue(CalendarContract.Events.DESCRIPTION, description)
                     .build());
-        }
-
-        if (!firstName.equals("null")){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
-                    .withValue(RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, firstName)
-                    .build());
-        }
-
-        if (!lastName.equals("null")){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, 0)
-                    .withValue(RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, lastName)
-                    .build());
-        }
-        // add phone number
-        if (!phone.equals("null")) {
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(Phone.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
-                    .withValue(Phone.NUMBER, phone)
-                    .withValue(Phone.TYPE, Phone.TYPE_WORK)
-                    .build());
-        }
-
-        //add mobile number
-        if (!mobileNo.equals("null")) {
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(Phone.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE)
-                    .withValue(Phone.NUMBER, mobileNo)
-                    .withValue(Phone.TYPE, Phone.TYPE_MOBILE)
-                    .build());
-        }
-
-        //add email
-        if (!emailID.equals("null")) {
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Email.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, emailID)
-                    .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
-                    .build());
-        }
-
-        //add Customer
-        if(!customerName.equals("null")){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, customerName)
-                    .build());
-        }
-
-        //add Supplier
-        if(!supplierName.equals("null")){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, supplierName)
-                    .build());
-        }
-
-        //add Sales Partner
-        if(!salePartnerName.equals("null")){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, salePartnerName)
-                    .build());
-        }
-
-        //add Department
-        if(!department.equals("null")){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Organization.DEPARTMENT, department)
-                    .build());
-        }
-
-        //add Designation
-        if(!designation.equals("null")){
-            op_list.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.CommonDataKinds.Organization.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Organization.TITLE, designation)
-                    .build());
-        }
-
-        op_list.add(ContentProviderOperation.newInsert(addCallerIsSyncAdapterParameter(ContactsContract.Data.CONTENT_URI, true))
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE, "vnd.android.cursor.item/vnd.io.frappe.frappeauthenticator.contact")
-                .withValue(ContactsContract.Data.DATA1, mobileNo)
-                .withValue(ContactsContract.Data.DATA2, displayName)
-                .withValue(ContactsContract.Data.DATA3, contactName)
-                .withValue(ContactsContract.Data.DATA4, phone)
-                .withValue(ContactsContract.Data.DATA5, emailID)
-                .withValue(ContactsContract.Data.DATA6, firstName)
-                .withValue(ContactsContract.Data.DATA7, lastName)
-                .withValue(ContactsContract.Data.DATA8, designation)
-                .withValue(ContactsContract.Data.DATA9, department)
-                .withValue(ContactsContract.Data.DATA10, customerName)
-                .withValue(ContactsContract.Data.DATA11, supplierName)
-                .withValue(ContactsContract.Data.DATA12, salePartnerName)
-                .build());
 
         try{
-            ContentProviderResult[] results = mContentResolver.applyBatch(ContactsContract.AUTHORITY, op_list);
+            ContentProviderResult[] results = mContentResolver.applyBatch(CalendarContract.AUTHORITY, op_list);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -202,18 +75,18 @@ public class EventsHelper {
 
     }
 
-    public void deleteContact(Account account, String name, ContentResolver mContentResolver) {
+    public void deleteEvent(Account account, String name, ContentResolver mContentResolver) {
 
-        String where = RawContacts.SYNC1 + " = ? AND " + RawContacts.ACCOUNT_TYPE + " = ? AND " + RawContacts.ACCOUNT_NAME + " = ? ";
+        String where = CalendarContract.Events.SYNC_DATA1 + " = ? AND " + CalendarContract.Events.ACCOUNT_TYPE + " = ? AND " + CalendarContract.Events.ACCOUNT_NAME + " = ? ";
         String[] params = new String[] {name, account.type, account.name};
 
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
         ops.add(ContentProviderOperation.newDelete(addCallerIsSyncAdapterParameter(
-                RawContacts.CONTENT_URI, true))
+                CalendarContract.Events.CONTENT_URI, true))
                 .withSelection(where, params)
                 .build());
         try {
-            mContentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
+            mContentResolver.applyBatch(CalendarContract.AUTHORITY, ops);
         } catch (RemoteException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -226,7 +99,7 @@ public class EventsHelper {
     private static Uri addCallerIsSyncAdapterParameter(Uri uri, boolean isSyncOperation) {
         if (isSyncOperation) {
             return uri.buildUpon()
-                    .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER,
+                    .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER,
                             "true").build();
         }
         return uri;

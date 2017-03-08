@@ -19,7 +19,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.BaseColumns;
-import android.provider.ContactsContract;
+import android.provider.CalendarContract;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -95,43 +95,44 @@ public class EventsSyncAdapterService extends Service {
                         @Override
                         public void onSuccessJSONObject(JSONObject response) {
 
-                            // Load the local app contacts
+                            // Load the local app calendar events
                             ArrayList<ContentProviderOperation> operationList = new ArrayList<ContentProviderOperation>();
-                            HashMap<String, Long> localContacts = new HashMap<String, Long>();
+                            HashMap<String, Long> localEvents = new HashMap<String, Long>();
                             try{
-                                Uri rawContactUri = ContactsContract.RawContacts.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, account.name).appendQueryParameter(
-                                        ContactsContract.RawContacts.ACCOUNT_TYPE, account.type).build();
-                                Cursor c1 = mContentResolver.query(rawContactUri, new String[] { BaseColumns._ID, ContactsContract.RawContacts.SYNC1 }, null, null, null);
+                                Uri rawEventsUri = CalendarContract.Events.CONTENT_URI.buildUpon().appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name).appendQueryParameter(
+                                        CalendarContract.Calendars.ACCOUNT_TYPE, account.type).build();
+                                Cursor c1 = mContentResolver.query(rawEventsUri, new String[] { BaseColumns._ID, CalendarContract.Events.SYNC_DATA1}, null, null, null);
                                 while (c1.moveToNext()) {
-                                    localContacts.put(c1.getString(1), c1.getLong(0));
+                                    localEvents.put(c1.getString(1), c1.getLong(0));
                                 }
                             }
                             catch (Exception e){
                                 e.printStackTrace();
                             }
 
-                            JSONArray contactsList = new JSONArray();
+                            JSONArray eventsList = new JSONArray();
                             try {
-                                contactsList = response.getJSONArray("data");
-                                for(int i=0;i<contactsList.length();i++){
+                                eventsList = response.getJSONArray("data");
+                                for(int i=0;i<eventsList.length();i++){
                                     JSONObject object = null;
                                     try {
-                                        object = contactsList.getJSONObject(i);
+                                        object = eventsList.getJSONObject(i);
                                         EventsHelper eHelper = new EventsHelper();
-                                        if (!localContacts.containsKey(object.getString("name"))) {
+                                        if (!localEvents.containsKey(object.getString("name"))) {
                                             eHelper.addEvent(account, object, mContentResolver);
                                         }
                                         else{
-                                            //cHelper.deleteContact(account, object.getString("name"), mContentResolver);
-                                            eHelper.updateEvent(account, object, mContentResolver);
+                                            eHelper.deleteEvent(account, object.getString("name"), mContentResolver);
+                                            eHelper.addEvent(account, object, mContentResolver);
+                                            //eHelper.updateEvent(account, object, mContentResolver);
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
                                 }
                                 if(operationList.size() > 0)
-                                    mContentResolver.applyBatch(ContactsContract.AUTHORITY, operationList);
-                                System.out.println(contactsList.toString());
+                                    mContentResolver.applyBatch(CalendarContract.AUTHORITY, operationList);
+                                System.out.println(eventsList.toString());
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             } catch (RemoteException e) {
