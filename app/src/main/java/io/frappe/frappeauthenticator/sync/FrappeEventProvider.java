@@ -37,8 +37,8 @@ public class FrappeEventProvider {
         //name, last_name, email_id, mobile_no, supplier_name, customer_name, first_name, department, designation, phone, sales_partner
         JsonObjectRequest req = new JsonObjectRequest(
                 frappeServerURL + "/api/resource/Event?limit_page_length=None" +
-                        "&fields=[\"event_type\",\"all_day\",\"subject\",\"description\",\"name\",\"starts_on\",\"ends_on\"]" +
-                        "&filters=[[\"starts_on\",\">\",\"" + URLEncoder.encode(dt.format(t_minus_3)) + "\"]]",
+                        "&fields=[\"event_type\",\"all_day\",\"subject\",\"description\",\"name\",\"starts_on\",\"ends_on\"]" /*+
+                        "&filters=[[\"starts_on\",\">\",\"" + URLEncoder.encode(dt.format(t_minus_3)) + "\"]]"*/,
                 null,
                 new Response.Listener<JSONObject>() {
                     @Override

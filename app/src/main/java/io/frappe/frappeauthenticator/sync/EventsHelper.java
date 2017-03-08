@@ -5,13 +5,15 @@ package io.frappe.frappeauthenticator.sync;
  */
 
 import android.accounts.Account;
-import android.content.ContentProviderOperation;
-import android.content.ContentProviderResult;
 import android.content.ContentResolver;
-import android.content.OperationApplicationException;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
-import android.os.RemoteException;
 import android.provider.CalendarContract;
+import android.support.v4.database.DatabaseUtilsCompat;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,89 +22,66 @@ import java.util.ArrayList;
 
 public class EventsHelper {
 
-    public static void addEvent(Account account, JSONObject contactInfo, ContentResolver mContentResolver) {
+    public static final String[] EVENT_PROJECTION = new String[] {
+            CalendarContract.Calendars._ID,                           // 0
+            CalendarContract.Calendars.ACCOUNT_NAME,                  // 1
+            CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,         // 2
+            CalendarContract.Calendars.OWNER_ACCOUNT                  // 3
+    };
 
-        // "event_type", "all_day", "subject", "description", "name", "starts_on", "ends_on"
-        String eventType = null;
-        String allDay = null;
-        String subject = null;
-        String description = null;
-        String eventName = null;
-        String startsOn = null;
-        String endsOn = null;
+    // The indices for the projection array above.
+    private static final int PROJECTION_ID_INDEX = 0;
+    private static final int PROJECTION_ACCOUNT_NAME_INDEX = 1;
+    private static final int PROJECTION_DISPLAY_NAME_INDEX = 2;
+    private static final int PROJECTION_OWNER_ACCOUNT_INDEX = 3;
 
-        try {
-            eventType = contactInfo.getString("event_type");
-            allDay = contactInfo.getString("all_day");
-            subject = contactInfo.getString("subject");
-            description = contactInfo.getString("description");
-            eventName = contactInfo.getString("name");
-            startsOn = contactInfo.getString("starts_on");
-            endsOn = contactInfo.getString("ends_on");
-        } catch (JSONException e) {
-            e.printStackTrace();
+    static public long queryCalender(Account account, ContentResolver mContentResolver){
+        Uri uri = CalendarContract.Calendars.CONTENT_URI;
+        String selection = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND ("
+                + CalendarContract.Calendars.ACCOUNT_TYPE + " = ?))";
+        String[] selectionArgs = new String[] {account.name, account.type};
+        // Submit the query and get a Cursor object back.
+        Cursor cr = mContentResolver.query(uri, EVENT_PROJECTION, selection, selectionArgs, null);
+        long calID = 0;
+        while (cr.moveToNext()) {
+            calID = cr.getLong(PROJECTION_ID_INDEX);
         }
-
-        //Create our Event
-        ArrayList<ContentProviderOperation> op_list = new ArrayList<ContentProviderOperation>();
-        op_list.add(ContentProviderOperation.newInsert(addCallerIsSyncAdapterParameter(
-                CalendarContract.Calendars.CONTENT_URI, true))
-                .withValue(CalendarContract.Calendars.ACCOUNT_TYPE, account.type)
-                .withValue(CalendarContract.Calendars.ACCOUNT_NAME, account.name)
-                .withValue(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,CalendarContract.Calendars.CAL_ACCESS_READ)
-                .build());
-
-        // Event Data
-
-           op_list.add(ContentProviderOperation.newInsert(CalendarContract.Events.CONTENT_URI)
-                    .withValueBackReference(CalendarContract.Events.CALENDAR_ID, 0)
-                    .withValue(CalendarContract.Events.SYNC_DATA1,eventName)
-                    .withValue(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startsOn)
-                    .withValue(CalendarContract.EXTRA_EVENT_END_TIME, endsOn)
-                    .withValue(CalendarContract.EXTRA_EVENT_ALL_DAY, allDay)
-                    .withValue(CalendarContract.Events.TITLE, subject)
-                    .withValue(CalendarContract.Events.DESCRIPTION, description)
-                    .build());
-
-        try{
-            ContentProviderResult[] results = mContentResolver.applyBatch(CalendarContract.AUTHORITY, op_list);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        cr.moveToFirst();
+        DatabaseUtils.dumpCursorToString(cr);
+        return calID;
     }
 
-    public static void updateEvent(Account account, JSONObject contactInfo, ContentResolver mContentResolver) {
+    static public void insertCalendar(Account account, ContentResolver mContentResolver){
+        ContentValues values = new ContentValues();
+        values.put(CalendarContract.Calendars.ACCOUNT_NAME, account.name);
+        values.put(CalendarContract.Calendars.ACCOUNT_TYPE, account.type);
+        values.put(CalendarContract.Calendars.NAME, account.name);
+        values.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, account.name);
+        values.put(CalendarContract.Calendars.CALENDAR_COLOR, 0xEA8561);
+        //user can only read the calendar
+        values.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, CalendarContract.Calendars.CAL_ACCESS_READ);
+        values.put(CalendarContract.Calendars.OWNER_ACCOUNT, account.name);
+        values.put(CalendarContract.Calendars.VISIBLE, 1);
+        values.put(CalendarContract.Calendars.SYNC_EVENTS, 1);
+        Uri updateUri = asSyncAdapter(CalendarContract.Calendars.CONTENT_URI, account);
+        mContentResolver.insert(updateUri, values);
+    }
+
+    static public void updateCalendar(Account account, ContentResolver mContentResolver, long calID){
+        ContentValues values = new ContentValues();
+        // The new display name for the calendar
+        values.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, account.name);
+        Uri updateUri = ContentUris.withAppendedId(asSyncAdapter(CalendarContract.Calendars.CONTENT_URI, account), calID);
+        int rows = mContentResolver.update(updateUri, values, null, null);
+        Log.i("updateCal", "Rows updated: " + rows);
 
     }
 
-    public void deleteEvent(Account account, String name, ContentResolver mContentResolver) {
-
-        String where = CalendarContract.Events.SYNC_DATA1 + " = ? AND " + CalendarContract.Events.ACCOUNT_TYPE + " = ? AND " + CalendarContract.Events.ACCOUNT_NAME + " = ? ";
-        String[] params = new String[] {name, account.type, account.name};
-
-        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-        ops.add(ContentProviderOperation.newDelete(addCallerIsSyncAdapterParameter(
-                CalendarContract.Events.CONTENT_URI, true))
-                .withSelection(where, params)
-                .build());
-        try {
-            mContentResolver.applyBatch(CalendarContract.AUTHORITY, ops);
-        } catch (RemoteException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (OperationApplicationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    private static Uri addCallerIsSyncAdapterParameter(Uri uri, boolean isSyncOperation) {
-        if (isSyncOperation) {
-            return uri.buildUpon()
-                    .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER,
-                            "true").build();
-        }
-        return uri;
+    static public Uri asSyncAdapter(Uri uri, Account account) {
+        return uri.buildUpon()
+                .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER,"true")
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name)
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, account.type).build();
     }
 
 }
