@@ -26,6 +26,7 @@ dependencies {
     })
     //compile 'com.android.support:appcompat-v7:25.1.1'
     // https://mvnrepository.com/artifact/commons-io/commons-io
+    compile 'com.android.support:design:25.0.0'
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile group: 'org.aksw.gson', name: 'gson-utils-core', version: '1.0.0'
     compile 'com.android.volley:volley:1.0.0'

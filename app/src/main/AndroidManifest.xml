@@ -46,6 +46,7 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+
         <service
             android:name=".sync.ContactsSyncAdapterService"
             android:exported="true"
@@ -74,6 +75,7 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_calendar" />
         </service>
+
         <activity
             android:name=".sync.ProfileActivity"
             android:exported="true"
@@ -87,5 +89,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
