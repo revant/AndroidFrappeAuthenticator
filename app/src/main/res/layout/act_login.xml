@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@android:style/Theme.Material.Light"
     android:orientation="vertical"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:weightSum="1"
+    android:background="@android:color/background_light">
     <WebView
         android:id="@+id/webv"
         android:layout_width="fill_parent"
@@ -48,11 +51,10 @@
         android:hint="ClientSecret" />
 
     <Button android:id="@+id/submit"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="10dp"
-              android:text="Sign in"
-              android:padding="10dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Sign in"
+        android:padding="10dp"/>
 
 </LinearLayout>
-
