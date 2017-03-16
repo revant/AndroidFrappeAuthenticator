@@ -17,6 +17,8 @@
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.READ_USER_DICTIONARY" />
     <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:name=".sync.ApplicationController"
@@ -44,6 +46,7 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+
         <service
             android:name=".sync.ContactsSyncAdapterService"
             android:exported="true"
@@ -60,6 +63,19 @@
                 android:resource="@xml/contacts" />
         </service>
 
+        <service
+            android:name=".sync.EventsSyncAdapterService"
+            android:exported="true"
+            android:process=":events">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_calendar" />
+        </service>
+
         <activity
             android:name=".sync.ProfileActivity"
             android:exported="true"
@@ -72,9 +88,5 @@
                 <data android:mimeType="vnd.android.cursor.item/vnd.io.frappe.frappeauthenticator.contact" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".sync.ViewingActivity"
-            android:label="@string/title_activity_viewing"></activity>
     </application>
-
 </manifest>
