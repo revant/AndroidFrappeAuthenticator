@@ -41,3 +41,6 @@
 #### Select the Frappe account contacts to display under contact list.
 <img src="https://raw.githubusercontent.com/revant/AndroidFrappeAuthenticator/sync/docs/images/10_erpnext_contact.jpeg" width="320">
 ##### Click on the Frappe icon on phone book contact to view ERPNext Contact
+
+# For Developer
+[Develop integrations with Android apps using Frappe Authenticator] (docs/developer.md)
