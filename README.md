@@ -48,6 +48,6 @@
 
 # For Developer
 
-<a href="https://raw.githubusercontent.com/revant/AndroidFrappeAuthenticator/sync/docs/developer.md">
+<a href="https://github.com/revant/AndroidFrappeAuthenticator/blob/sync/docs/developer.md">
 Develop integrations with Android apps using Frappe Authenticator
 </a>
