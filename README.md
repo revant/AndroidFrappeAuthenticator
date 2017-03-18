@@ -37,7 +37,17 @@
 #### Go to the Phone's Contacts app,
 
 ##### Click the menu and select Contacts to display
+
 <img src="https://raw.githubusercontent.com/revant/AndroidFrappeAuthenticator/sync/docs/images/09_contacts_to_display.jpeg" width="320">
+
 #### Select the Frappe account contacts to display under contact list.
+
 <img src="https://raw.githubusercontent.com/revant/AndroidFrappeAuthenticator/sync/docs/images/10_erpnext_contact.jpeg" width="320">
+
 ##### Click on the Frappe icon on phone book contact to view ERPNext Contact
+
+# For Developer
+
+<a href="https://github.com/revant/AndroidFrappeAuthenticator/blob/sync/docs/developer.md">
+Develop integrations with Android apps using Frappe Authenticator
+</a>
