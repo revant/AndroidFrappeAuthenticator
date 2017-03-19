@@ -28,7 +28,7 @@ public class FrappeEventProvider {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE,-3);
         Date t_minus_3 = cal.getTime();
-        SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         // POST params to be sent to the server
         // HashMap<String, String> params = new HashMap<String, String>();
         // params.put("limit_page_length","None");
